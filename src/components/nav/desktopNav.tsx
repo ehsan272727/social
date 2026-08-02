@@ -24,10 +24,13 @@ export function DesktopNav({ isSignedIn }: NavbarProps) {
           <House className="size-7" />
           <span className="hidden md:inline text-sm">Home</span>
         </Link>
-        <Button className="flex items-center gap-3 py-2.5 px-2.5 md:pr-16">
+        <Link
+          href="/explore"
+          className="flex items-center gap-3 py-2.5 px-2.5 md:pr-16"
+        >
           <Search className="size-7" />
           <span className="hidden md:inline text-sm">Search</span>
-        </Button>
+        </Link>
         <Button className="flex items-center gap-3 py-2.5 px-2.5 md:pr-16">
           <SquarePlus className="size-7" />
           <span className="hidden md:inline text-sm">Create</span>

@@ -38,10 +38,10 @@ export default function RootLayout({
         notoSans.variable,
       )}
     >
-      <body className="container">
+      <body className="container mx-auto">
         <div className="flex">
           <Navbar />
-          <div className="flex-1">{children}</div>
+          <div className="flex-1 p-7">{children}</div>
         </div>
       </body>
     </html>

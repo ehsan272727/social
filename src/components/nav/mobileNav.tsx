@@ -20,10 +20,10 @@ export function MobileNav({ isSignedIn }: NavbarProps) {
           <House />
           <span className="text-sm">Home</span>
         </Link>
-        <Button className="flex flex-col items-center">
+        <Link href="/explore" className="flex flex-col items-center">
           <Search />
           <span className="text-sm">Search</span>
-        </Button>
+        </Link>
         <Button className="flex flex-col items-center">
           <SquarePlus />
           <span className="text-sm">Create</span>

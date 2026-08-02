@@ -8,9 +8,7 @@ export interface NavbarProps {
   isSignedIn: boolean;
 }
 
-interface Props {}
-
-export function Navbar({}: Props) {
+export function Navbar() {
   const { data: session } = authClient.useSession();
 
   return (
