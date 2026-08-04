@@ -15,7 +15,7 @@ export function GoogleButton({ handleGoogleSignIn }: Props) {
       variant="secondary"
       className="flex justify-center items-center gap-3 py-5.5 cursor-pointer"
     >
-      <GoogleIcon className="size-6 md:size-8" />
+      <GoogleIcon className="size-5 md:size-6" />
       <span>Continue with Google</span>
     </Button>
   );
