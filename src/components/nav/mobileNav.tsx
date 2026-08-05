@@ -18,7 +18,7 @@ export function MobileNav({
 }: NavbarProps) {
   // grid-flow-col auto-cols-fr
   return (
-    <nav className="sm:hidden fixed bottom-0 left-0 w-full px-0.5 border-t">
+    <nav className="sm:hidden w-full fixed bottom-0 left-0 px-0.5 pb-0.5 bg-white border-t">
       <div className="grid grid-cols-5 justify-center items-center gap-2 overflow-y-scroll">
         <Link
           href="/"
