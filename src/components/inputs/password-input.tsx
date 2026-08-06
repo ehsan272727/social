@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Field,
-  FieldDescription,
-  FieldLabel,
-  FieldError,
-} from "@/components/ui/field";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Control, Controller, FieldValues, Path } from "react-hook-form";
 import {
   InputGroup,
@@ -13,7 +8,7 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { Button } from "@/components/ui/button";
-import { InputHTMLAttributes, ReactNode, useId, useState } from "react";
+import { ReactNode, useId, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
 interface Props<T extends FieldValues> {

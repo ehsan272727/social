@@ -9,25 +9,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Field,
-  FieldDescription,
-  FieldLabel,
-  FieldError,
-} from "@/components/ui/field";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
 import { Separator } from "@/components/ui/separator";
 import { authClient } from "@/lib/auth-client";
 import { isAPIError } from "better-auth/api";
-import { Eye, EyeOff, UserRoundPlus } from "lucide-react";
+import { UserRoundPlus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { z } from "zod";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormInput } from "@/components/inputs";
 import { PasswordInput } from "@/components/inputs/password-input";
@@ -57,13 +46,7 @@ const FormSchema = z
 type FormData = z.input<typeof FormSchema>;
 
 export default function SignUp() {
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const {
-    formState: { errors },
-    handleSubmit,
-    control,
-    watch,
-  } = useForm({
+  const { handleSubmit, control, watch } = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: "",
