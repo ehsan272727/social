@@ -12,9 +12,8 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { authClient } from "@/lib/auth-client";
 import { isAPIError } from "better-auth/api";
-import { UserRoundPlus } from "lucide-react";
+import { CircleSmall, UserRoundPlus } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,7 +34,9 @@ const FormSchema = z
     displayUsername: z
       .string()
       .transform((val) => (val.trim() === "" ? null : val.trim())),
-    password: z.string().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/),
+    password: z
+      .string()
+      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/, { error: "" }),
     passwordConfirm: z.string(),
   })
   .refine((data) => data.password === data.passwordConfirm, {
@@ -44,6 +45,50 @@ const FormSchema = z
   });
 
 type FormData = z.input<typeof FormSchema>;
+
+interface passwordCheckList {
+  length: boolean;
+  letters: boolean;
+  numbers: boolean;
+}
+
+function PasswordCheck({ password }: { password?: string }) {
+  let conditions: passwordCheckList = {
+    length: false,
+    letters: false,
+    numbers: false,
+  };
+  if (password) {
+    conditions = {
+      length: password.length >= 8,
+      numbers: /\d/.test(password),
+      letters: /[a-z]/.test(password) && /[A-Z]/.test(password),
+    };
+  }
+
+  return (
+    <ul className="flex flex-col text-xs md:text-sm">
+      <li
+        className={`flex items-center ${conditions.length ? "text-blue-800" : "text-red-600"}`}
+      >
+        <CircleSmall className={`size-3.5 md:size-5`} />
+        at least 8 characters
+      </li>
+      <li
+        className={`flex items-center ${conditions.numbers ? "text-blue-800" : "text-red-600"}`}
+      >
+        <CircleSmall className={`size-3.5 md:size-5`} />
+        contains numbers
+      </li>
+      <li
+        className={`flex items-center ${conditions.letters ? "text-blue-800" : "text-red-600"}`}
+      >
+        <CircleSmall className={`size-3.5 md:size-5`} />
+        contains upper and lower case letters
+      </li>
+    </ul>
+  );
+}
 
 export default function SignUp() {
   const { handleSubmit, control, watch } = useForm({
@@ -59,6 +104,7 @@ export default function SignUp() {
   });
 
   const usernameValue = watch("username");
+  const passwordValue = watch("password");
 
   function onSubmit(data: z.output<typeof FormSchema>) {
     console.log(data);
@@ -122,7 +168,7 @@ export default function SignUp() {
               name="password"
               isRequired={true}
               label="Password"
-              description=""
+              description={<PasswordCheck password={passwordValue} />}
             />
             {/* ====================== */}
             <PasswordInput

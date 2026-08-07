@@ -1,6 +1,6 @@
 "use client";
 
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Control, Controller, FieldValues, Path } from "react-hook-form";
 import {
   InputGroup,
@@ -39,33 +39,38 @@ export function PasswordInput<T extends FieldValues>({
           {isRequired && <span className="text-destructive">*</span>}
         </FieldLabel>
       )}
-      <InputGroup>
-        {
-          <Controller
-            name={name}
-            control={formControl}
-            render={({ field, fieldState }) => (
-              <InputGroupInput
-                {...field}
-                id={id}
-                aria-invalid={fieldState.invalid}
-                type={showPassword ? "text" : "password"}
-                placeholder={placeholder ? placeholder : ""}
-              />
-            )}
-          />
-        }
-        <InputGroupAddon align="inline-end" className="pr-1">
-          <Button
-            size="icon"
-            variant="ghost"
-            onClick={() => setShowPassword((prev) => !prev)}
-          >
-            {showPassword ? <Eye /> : <EyeOff />}
-          </Button>
-        </InputGroupAddon>
-      </InputGroup>
-      {description && <FieldDescription>{description}</FieldDescription>}
+
+      {
+        <Controller
+          name={name}
+          control={formControl}
+          render={({ field, fieldState }) => (
+            <>
+              <InputGroup>
+                <InputGroupInput
+                  {...field}
+                  id={id}
+                  aria-invalid={fieldState.invalid}
+                  type={showPassword ? "text" : "password"}
+                  placeholder={placeholder ? placeholder : ""}
+                />
+                <InputGroupAddon align="inline-end" className="pr-1">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                  >
+                    {showPassword ? <Eye /> : <EyeOff />}
+                  </Button>
+                </InputGroupAddon>
+              </InputGroup>
+              {fieldState.error && <FieldError errors={[fieldState.error]} />}
+            </>
+          )}
+        />
+      }
+
+      {description}
     </Field>
   );
 }
