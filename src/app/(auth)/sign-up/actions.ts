@@ -7,7 +7,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { isAPIError } from "better-auth/api";
 
 export async function signUpAction(
-  formOutput: SignUpFormOutput,
+  formOutput: Partial<SignUpFormOutput>,
 ): Promise<ActionResponse> {
   const validation = await SignUpServerSchema.safeParseAsync(formOutput);
 
