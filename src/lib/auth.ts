@@ -6,6 +6,7 @@ import { username } from "better-auth/plugins";
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
+  trustedOrigins: ["http://192.168.1.101:3000"],
   plugins: [username(), nextCookies()], // make sure NextCookies is the last plugin in the array
   database: prismaAdapter(prisma, {
     provider: "postgresql",

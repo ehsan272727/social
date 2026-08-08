@@ -211,10 +211,10 @@ export default function SignUp() {
               description=""
             />
             {/* ====================== */}
-            <Button className="py-5" type="submit">
+            <Button disabled={signingUp} className="py-5" type="submit">
               <span>Sign up</span>
               {signingUp ? (
-                <Spinner data-icon="inline-end" />
+                <Spinner data-icon="inline-end" className="size-4.5" />
               ) : (
                 <UserRoundPlus />
               )}

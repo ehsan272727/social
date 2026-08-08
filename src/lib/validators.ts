@@ -18,6 +18,10 @@ const baseSchema = z.object({
     .max(maxUsernameLength, {
       error: `at most ${maxUsernameLength} characters`,
     })
+    .regex(
+      /^[a-zA-Z0-9_.]+$/,
+      "Username can only contain letters, numbers, underscores, and dots",
+    )
     .transform((val) => (val.trim() === "" ? null : val.trim())),
   displayUsername: z.string().optional().nullable(),
   password: z

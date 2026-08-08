@@ -1,6 +1,7 @@
 "use client";
 
 import { GoogleButton } from "@/components/auth/googleButton";
+import { FormInput, PasswordInput } from "@/components/inputs";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,33 +10,83 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
 import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "@/components/ui/toast";
 import { authClient } from "@/lib/auth-client";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { isAPIError } from "better-auth/api";
-import { Eye, EyeOff, LogIn } from "lucide-react";
+import { Ban, LogIn } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { string, z } from "zod";
+
+const signInSchema = z.object({
+  identifier: string().min(1, { error: "Enter your email or username" }),
+  password: string().min(1, { error: "Enter your password" }),
+});
 
 export default function SignIn() {
-  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const { control, handleSubmit } = useForm({
+    resolver: zodResolver(signInSchema),
+    defaultValues: {
+      identifier: "",
+      password: "",
+    },
+  });
+
+  const router = useRouter();
+  const [signingIn, setSigningIn] = useState(false);
+  const [errorState, setErrorState] = useState<string | undefined>("");
 
   async function handleGoogleSignIn() {
     try {
       const data = await authClient.signIn.social({
         provider: "google",
       });
-      console.log(data);
     } catch (error) {
       if (isAPIError(error)) {
         return "an Error happened in sign in";
       }
+    }
+  }
+
+  async function onSubmit(data: z.output<typeof signInSchema>) {
+    setErrorState(undefined);
+    const { identifier, password } = data;
+    let result = null;
+
+    try {
+      setSigningIn(true);
+      if (identifier.includes("@")) {
+        result = await authClient.signIn.email({
+          email: identifier,
+          password,
+        });
+      } else {
+        result = await authClient.signIn.username({
+          username: identifier,
+          password,
+        });
+      }
+      setSigningIn(false);
+      if (result.error) {
+        toast.add({
+          type: "error",
+          description: result.error.message,
+          positionerProps: {},
+        });
+        setErrorState(result.error.message);
+        return;
+      } else {
+        toast.add({ type: "success", description: "You're logged in" });
+        router.back();
+      }
+    } catch (error) {
+      setSigningIn(false);
+      toast.add({ type: "error", description: "An unkown error happened" });
     }
   }
 
@@ -46,36 +97,38 @@ export default function SignIn() {
           <CardTitle>Sign in</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
-          <form className="flex flex-col gap-2">
-            <Field>
-              <FieldLabel htmlFor="input-username-email">
-                Email Or Username
-              </FieldLabel>
-              <Input id="inpu-username-email" />
-              <FieldDescription></FieldDescription>
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="input-password">Password</FieldLabel>
-              <InputGroup>
-                <InputGroupInput
-                  id="input-password"
-                  type={showPassword ? "text" : "password"}
-                />
-                <InputGroupAddon align="inline-end" className="pr-1">
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => setShowPassword((prev) => !prev)}
-                  >
-                    {showPassword ? <Eye /> : <EyeOff />}
-                  </Button>
-                </InputGroupAddon>
-              </InputGroup>
-              <FieldDescription></FieldDescription>
-            </Field>
-            <Button className="py-5">
-              <span>Sign in</span>
-              <LogIn />
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col gap-2"
+          >
+            <FormInput
+              formControl={control}
+              name="identifier"
+              label="Email or Username"
+              isRequired={true}
+            />
+            <PasswordInput
+              formControl={control}
+              name="password"
+              label="Password"
+              isRequired={true}
+            />
+            {errorState && (
+              <div
+                aria-label="authentication error"
+                className="w-fit flex items-center gap-1  rounded-md border p-2 text-red-600"
+              >
+                {errorState}
+                <Ban className="size-4" />
+              </div>
+            )}
+            <Button type="submit" disabled={signingIn} className="py-5">
+              Sign in
+              {signingIn ? (
+                <Spinner data-icon="inline-end" className="size-4.5" />
+              ) : (
+                <LogIn />
+              )}
             </Button>
           </form>
           <div className="flex items-center gap-4">
