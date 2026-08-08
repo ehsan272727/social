@@ -24,10 +24,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FormInput } from "@/components/inputs";
 import { PasswordInput } from "@/components/inputs/password-input";
 import { signUpAction } from "./actions";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { toast } from "@/components/ui/toast";
 import { ActionResponse } from "@/types/action";
 import { useRouter } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner";
 
 interface passwordCheckList {
   length: boolean;
@@ -90,38 +91,55 @@ export default function SignUp() {
   const passwordValue = watch("password");
 
   const [isPending, startTransition] = useTransition();
+  const [signingUp, setSigningUp] = useState(false);
   const router = useRouter();
 
   async function onSubmit(data: SignUpFormOutput) {
     const { passwordConfirm, ...signUpData } = data;
-    const signUpPromise = signUpAction(signUpData);
+    // const signUpPromise = signUpAction(signUpData);
 
-    toast.promise<ActionResponse>(signUpPromise, {
-      loading: "Signing up user...",
-      success: (response) => {
-        if ("error" in response) {
-          throw new Error(response.error);
-        }
-        return response.success_message;
-      },
-      error: (err) => err.message,
-    });
+    // toast.promise<ActionResponse>(signUpPromise, {
+    //   loading: "Signing up user...",
+    //   success: (response) => {
+    //     if ("error" in response) {
+    //       throw new Error(response.error);
+    //     }
+    //     return response.success_message;
+    //   },
+    //   error: (err) => err.message,
+    // });
 
-    startTransition(async () => {
-      try {
-        const response = await signUpPromise;
-        if ("error" in response) {
-          return;
-        }
+    // startTransition(async () => {
+    //   try {
+    //     const response = await signUpPromise;
+    //     if ("error" in response) {
+    //       return;
+    //     }
 
-        router.push("/");
-      } catch (error) {
-        toast.add({
-          type: "error",
-          description: "An unknown error happened",
-        });
+    //     router.push("/");
+    //   } catch (error) {
+    //     toast.add({
+    //       type: "error",
+    //       description: "An unknown error happened",
+    //     });
+    //   }
+    // });
+
+    // Better auth client
+    try {
+      setSigningUp(true);
+      const { error } = await authClient.signUp.email({ ...signUpData });
+      if (error) {
+        toast.add({ type: "error", description: error.message });
+        setSigningUp(false);
+        return;
       }
-    });
+
+      router.push("/");
+    } catch (error) {
+      setSigningUp(false);
+      toast.add({ type: "error", description: "An unknown error happened" });
+    }
   }
 
   async function handleGoogleSignIn() {
@@ -195,7 +213,11 @@ export default function SignUp() {
             {/* ====================== */}
             <Button className="py-5" type="submit">
               <span>Sign up</span>
-              <UserRoundPlus />
+              {signingUp ? (
+                <Spinner data-icon="inline-end" />
+              ) : (
+                <UserRoundPlus />
+              )}
             </Button>
           </form>
           <div className="flex items-center gap-4">
