@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Noto_Sans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Navbar } from "@/components/nav";
+import { Toaster } from "@/components/ui/toast";
 
 const notoSans = Noto_Sans({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -43,6 +44,7 @@ export default function RootLayout({
           <Navbar />
           <div className="flex-1 p-7 pb-16">{children}</div>
         </div>
+        <Toaster />
       </body>
     </html>
   );

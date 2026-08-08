@@ -10,41 +10,24 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import {
+  SignUpFormData,
+  SignUpFormOutput,
+  SignUpFormSchema,
+} from "@/lib/validators";
 import { authClient } from "@/lib/auth-client";
 import { isAPIError } from "better-auth/api";
 import { CircleSmall, UserRoundPlus } from "lucide-react";
 import Link from "next/link";
-import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormInput } from "@/components/inputs";
 import { PasswordInput } from "@/components/inputs/password-input";
-
-const FormSchema = z
-  .object({
-    name: z.string().min(1, {
-      error: "Name is required",
-    }),
-    email: z.email({
-      error: "Enter a valid email",
-    }),
-    username: z
-      .string()
-      .transform((val) => (val.trim() === "" ? null : val.trim())),
-    displayUsername: z
-      .string()
-      .transform((val) => (val.trim() === "" ? null : val.trim())),
-    password: z
-      .string()
-      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/, { error: "" }),
-    passwordConfirm: z.string(),
-  })
-  .refine((data) => data.password === data.passwordConfirm, {
-    error: "Passwords do not match",
-    path: ["passwordConfirm"],
-  });
-
-type FormData = z.input<typeof FormSchema>;
+import { signUpAction } from "./actions";
+import { useTransition } from "react";
+import { toast } from "@/components/ui/toast";
+import { ActionResponse } from "@/types/action";
+import { useRouter } from "next/navigation";
 
 interface passwordCheckList {
   length: boolean;
@@ -92,7 +75,7 @@ function PasswordCheck({ password }: { password?: string }) {
 
 export default function SignUp() {
   const { handleSubmit, control, watch } = useForm({
-    resolver: zodResolver(FormSchema),
+    resolver: zodResolver(SignUpFormSchema),
     defaultValues: {
       name: "",
       username: "",
@@ -106,8 +89,39 @@ export default function SignUp() {
   const usernameValue = watch("username");
   const passwordValue = watch("password");
 
-  function onSubmit(data: z.output<typeof FormSchema>) {
-    console.log(data);
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
+  async function onSubmit(data: SignUpFormOutput) {
+    const { passwordConfirm, ...signUpData } = data;
+    const signUpPromise = signUpAction(signUpData);
+
+    toast.promise<ActionResponse>(signUpPromise, {
+      loading: "Signing up user...",
+      success: (response) => {
+        if ("error" in response) {
+          throw new Error(response.error);
+        }
+        return response.success_message;
+      },
+      error: (err) => err.message,
+    });
+
+    startTransition(async () => {
+      try {
+        const response = await signUpPromise;
+        if ("error" in response) {
+          return;
+        }
+
+        router.push("/");
+      } catch (error) {
+        toast.add({
+          type: "error",
+          description: "An unknown error happened",
+        });
+      }
+    });
   }
 
   async function handleGoogleSignIn() {
@@ -133,21 +147,21 @@ export default function SignUp() {
             onSubmit={handleSubmit(onSubmit)}
             className="flex flex-col gap-2"
           >
-            <FormInput<FormData>
+            <FormInput<SignUpFormData>
               formControl={control}
               name="name"
               label="name"
               isRequired={true}
             />
             {/* ====================== */}
-            <FormInput<FormData>
+            <FormInput<SignUpFormData>
               formControl={control}
               name="username"
               label="username"
               isRequired={true}
             />
             {/* ====================== */}
-            <FormInput<FormData>
+            <FormInput<SignUpFormData>
               formControl={control}
               name="displayUsername"
               label="display username"
@@ -155,7 +169,7 @@ export default function SignUp() {
               description="The name other users see"
             />
             {/* ====================== */}
-            <FormInput<FormData>
+            <FormInput<SignUpFormData>
               formControl={control}
               type="email"
               name="email"
