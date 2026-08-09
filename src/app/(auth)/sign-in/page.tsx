@@ -136,7 +136,7 @@ export default function SignIn() {
             <p className="shrink-0">OR</p>
             <Separator className="flex-1"></Separator>
           </div>
-          <GoogleButton handleGoogleSignIn={handleGoogleSignIn} />
+          <GoogleButton />
         </CardContent>
         <CardFooter className="flex flex-col gap-2">
           <Link href="/forget" className="font-bold hover:underline">

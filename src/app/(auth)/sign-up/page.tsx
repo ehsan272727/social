@@ -142,18 +142,6 @@ export default function SignUp() {
     }
   }
 
-  async function handleGoogleSignIn() {
-    try {
-      const data = await authClient.signIn.social({
-        provider: "google",
-      });
-    } catch (error) {
-      if (isAPIError(error)) {
-        return "an Error happened in sign in";
-      }
-    }
-  }
-
   return (
     <div className="flex justify-center">
       <Card className="sm:max-w-75 flex-1">
@@ -225,7 +213,7 @@ export default function SignUp() {
             <p className="shrink-0">OR</p>
             <Separator className="flex-1"></Separator>
           </div>
-          <GoogleButton handleGoogleSignIn={handleGoogleSignIn} />
+          <GoogleButton />
         </CardContent>
         <CardFooter className="flex flex-col gap-2">
           <p className="flex gap-1">
