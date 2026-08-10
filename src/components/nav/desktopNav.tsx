@@ -10,7 +10,6 @@ import {
   SquarePlus,
   UserRoundArrowLeft,
 } from "lucide-react";
-import { Button } from "@base-ui/react";
 
 export function DesktopNav({
   isSignedIn,
