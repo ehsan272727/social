@@ -22,7 +22,15 @@ export default async function Home() {
             username: true,
           },
         },
+        _count: {
+          select: {
+            likes: true,
+          },
+        },
         likes: {
+          where: {
+            userId: session.user.id,
+          },
           select: {
             userId: true,
           },
