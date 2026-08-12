@@ -44,6 +44,9 @@ export async function LikeAction({
     return { success_message: "Like was toggled" };
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError) {
+      if (error.code === "P2002") {
+        return { error: "post is already liked by you" };
+      }
       return { error: error.message };
     } else {
       return { error: "An unknown error happened" };
