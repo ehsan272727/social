@@ -8,7 +8,6 @@ interface Props {
 }
 
 export function ClientPage({ posts }: Props) {
-  console.log(posts);
   return (
     <div className="flex flex-col gap-9">
       {posts.map((post) => (
