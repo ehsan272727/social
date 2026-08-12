@@ -24,7 +24,7 @@ export function SignInDialog({ title, isOpen, handleOpenChange }: Props) {
             <DialogDescription className="flex justify-evenly  mt-2">
               <Link
                 href="/sign-in"
-                className="w-fit flex items-center gap-1 no-underline! px-1.5 py-0.5 bg-primary text-white rounded-md border text-lg  md:text-xl"
+                className="w-fit flex items-center gap-1 no-underline! px-1.5 py-0.5 text-black rounded-md border text-lg  md:text-xl"
               >
                 Sign in <LogIn className="size-6" />
               </Link>
