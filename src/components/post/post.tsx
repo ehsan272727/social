@@ -1,14 +1,14 @@
 "use client";
 
 import { PostWithInfo } from "@/types/post";
-import { AuthUser } from "@/types/user";
 import clsx from "clsx";
 import { MessageCircle, ThumbsUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { LikeAction } from "@/app/(actions)/like";
+import { toast } from "../ui/toast";
 
 interface Props {
-  user: AuthUser;
   post: PostWithInfo;
 }
 
@@ -22,15 +22,15 @@ function formatLikes(likes: number) {
   }
 }
 
-export function Post({ post, user }: Props) {
+export function Post({ post }: Props) {
   const [likeState, setLikeState] = useState({
-    isLiked: post.likes.length > 0,
+    isLiked: post.likes?.length > 0,
     count: post._count.likes,
   });
 
   const formattedLikes = formatLikes(likeState.count);
 
-  const handleLikeToggle = () => {
+  const handleLikeToggle = async () => {
     const previous = likeState;
     setLikeState({
       isLiked: !previous.isLiked,
@@ -38,8 +38,17 @@ export function Post({ post, user }: Props) {
     });
 
     try {
+      const result = await LikeAction({
+        postId: post.id,
+        isLiked: !previous.isLiked,
+      });
+      if ("error" in result) {
+        setLikeState(previous);
+        toast.add({ type: "error", description: result.error });
+      }
     } catch (error) {
       setLikeState(previous);
+      toast.add({ type: "error", description: "An unknown error happened" });
     }
   };
 

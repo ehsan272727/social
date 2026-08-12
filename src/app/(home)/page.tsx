@@ -9,44 +9,41 @@ export default async function Home() {
     headers: await headers(),
   });
 
-  let myPosts: PostWithInfo[] = [];
-
-  if (session?.user.id) {
-    myPosts = await prisma.post.findMany({
-      where: {
-        userId: session.user.id,
-      },
-      include: {
-        user: {
-          select: {
-            username: true,
-          },
-        },
-        _count: {
-          select: {
-            likes: true,
-          },
-        },
-        likes: {
-          where: {
-            userId: session.user.id,
-          },
-          select: {
-            userId: true,
-          },
+  const posts: PostWithInfo[] = await prisma.post.findMany({
+    include: {
+      user: {
+        select: {
+          username: true,
         },
       },
-    });
-  }
-
-  if (!session?.user) {
-    return null;
-  }
+      _count: {
+        select: {
+          likes: true,
+        },
+      },
+      likes: session
+        ? {
+            where: {
+              userId: session.user.id,
+            },
+            take: 1,
+            select: {
+              id: true,
+            },
+          }
+        : {
+            take: 0,
+            select: {
+              id: true,
+            },
+          },
+    },
+  });
 
   return (
     <div className="">
       <main className="m-5">
-        <ClientPage posts={myPosts} user={session?.user} />
+        <ClientPage posts={posts} />
       </main>
     </div>
   );
