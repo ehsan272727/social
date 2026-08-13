@@ -9,6 +9,7 @@ import { LikeAction } from "@/app/(actions)/like";
 import { toast } from "../ui/toast";
 import { SignInDialog } from "../auth/sign-in-dialog";
 import { authClient } from "@/lib/auth-client";
+import { CommentDialog } from "./comment-dialog";
 
 interface Props {
   post: PostWithInfo;
@@ -31,6 +32,7 @@ export function Post({ post }: Props) {
     count: post._count.likes,
   });
   const [isSignInDialogOpen, setSignInDialog] = useState(false);
+  const [isCommentOpen, setIsCommentOpen] = useState(false);
   const formattedLikes = formatLikes(likeState.count);
 
   const handleLikeToggle = async () => {
@@ -80,7 +82,12 @@ export function Post({ post }: Props) {
               )}
             />
           </Button>
-          <Button variant="outline" size="icon" className="w-max px-1 gap-1">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setIsCommentOpen(true)}
+            className="w-max px-1 gap-1"
+          >
             {<MessageCircle className="size-5 md:size-6" />}
           </Button>
         </div>
@@ -89,6 +96,11 @@ export function Post({ post }: Props) {
         title="Sign in to like and comment"
         isOpen={isSignInDialogOpen}
         handleOpenChange={setSignInDialog}
+      />
+      <CommentDialog
+        isOpen={isCommentOpen}
+        handleOpenChange={setIsCommentOpen}
+        post={post}
       />
     </>
   );
