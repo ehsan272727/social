@@ -1,3 +1,5 @@
+"use client";
+
 import { PostWithInfo } from "@/types/post";
 import { Drawer, DrawerHeader, DrawerContent } from "@/components/ui/drawer";
 import { useMediaQuery } from "usehooks-ts";
@@ -9,7 +11,7 @@ interface Props {
   handleOpenChange: (open: boolean) => void;
 }
 
-export function CommentDialog({ isOpen, handleOpenChange }: Props) {
+export function CommentDialog({ post, isOpen, handleOpenChange }: Props) {
   const isMobile = useMediaQuery("(max-width: 640px)");
 
   return (
@@ -24,7 +26,7 @@ export function CommentDialog({ isOpen, handleOpenChange }: Props) {
           Comments
         </DrawerHeader>
         <div className="p-2">
-          <CommentInput />
+          <CommentInput post={post} />
         </div>
       </DrawerContent>
     </Drawer>
