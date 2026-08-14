@@ -3,11 +3,12 @@
 import { Drawer, DrawerHeader, DrawerContent } from "@/components/ui/drawer";
 import { useMediaQuery } from "usehooks-ts";
 import { CommentInput } from "../inputs/comment-input";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { ApiResponse } from "@/types/api/response";
 import { Comment } from "@/prisma/generated/client";
-import { Spinner } from "@/components/ui/spinner";
+import { CommentsListSkeleton } from "@/components/skeleton-ui/comment-skeleton";
+import { useEffect } from "react";
 
 interface Props {
   postId: string | null;
@@ -20,18 +21,24 @@ async function getComments(postId: string) {
     params: { postId },
   });
 
-  console.log(response.data);
   return response.data;
 }
 
 export function CommentsDialog({ postId, isOpen, handleOpenChange }: Props) {
   const isMobile = useMediaQuery("(max-width: 640px)");
 
-  const { data: comments, isPending } = useQuery<ApiResponse<Comment[]>>({
+  const { data: comments, isFetching } = useQuery<ApiResponse<Comment[]>>({
     queryKey: ["comments", postId],
     queryFn: () => getComments(postId!),
     enabled: postId !== null,
   });
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (isOpen && postId) {
+      queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+    }
+  }, [isOpen, queryClient, postId]);
 
   return (
     <Drawer
@@ -46,14 +53,18 @@ export function CommentsDialog({ postId, isOpen, handleOpenChange }: Props) {
         </DrawerHeader>
         <div className="p-2">
           <CommentInput postId={postId} />
-          {comments?.data && (
+          {comments?.data && !isFetching && (
             <div className="flex flex-col">
               {comments.data.map((comment) => (
                 <div key={comment.id}>{comment.content}</div>
               ))}
             </div>
           )}
-          {isPending && <Spinner className="mt-2 mx-auto size-8" />}
+          {isFetching && (
+            <div className="mt-3">
+              <CommentsListSkeleton />
+            </div>
+          )}
         </div>
       </DrawerContent>
     </Drawer>
