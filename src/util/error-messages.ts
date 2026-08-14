@@ -10,4 +10,8 @@ export const ERROR_MESSAGES = {
   unknown: {
     server: "an unknown server error happened",
   },
+
+  prisma: {
+    P2015: "did not find the record",
+  },
 };

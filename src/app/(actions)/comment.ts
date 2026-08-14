@@ -10,12 +10,12 @@ import { headers } from "next/headers";
 
 interface Props {
   content: string;
-  post: Post;
+  postId: string;
 }
 
 export async function createCommentAction({
   content,
-  post,
+  postId,
 }: Props): Promise<ActionResponse> {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -34,7 +34,7 @@ export async function createCommentAction({
     await prisma.comment.create({
       data: {
         content,
-        postId: post.id,
+        postId,
         userId: session.user.id,
       },
     });

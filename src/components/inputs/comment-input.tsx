@@ -6,17 +6,20 @@ import { FaceGrinning, SendHorizonal } from "lucide-react";
 import { SubmitEvent, useState, useTransition } from "react";
 import { Spinner } from "../ui/spinner";
 import { createCommentAction } from "@/app/(actions)/comment";
-import { Post } from "@/prisma/generated/client";
 import { toast } from "@/components/ui/toast";
 import { ERROR_MESSAGES } from "@/util/error-messages";
 
 interface Props {
-  post: Post;
+  postId: string | null;
 }
 
-export function CommentInput({ post }: Props) {
+export function CommentInput({ postId }: Props) {
   const [isSending, startTransition] = useTransition();
   const [content, setContent] = useState("");
+
+  if (!postId) {
+    return null;
+  }
 
   const handleCommentSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     startTransition(async () => {
@@ -27,7 +30,7 @@ export function CommentInput({ post }: Props) {
       }
 
       try {
-        const result = await createCommentAction({ post, content });
+        const result = await createCommentAction({ postId, content });
 
         if ("error" in result) {
           toast.add({ type: "error", description: result.error });
