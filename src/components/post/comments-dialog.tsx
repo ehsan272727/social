@@ -56,9 +56,9 @@ export function CommentsDialog({ postId, isOpen, handleOpenChange }: Props) {
         <div className="p-2">
           <CommentInput postId={postId} />
           {comments?.data && !isFetching && (
-            <div className="mt-5 flex flex-col gap-2">
+            <div className="mt-5 flex flex-col gap-5">
               {comments.data.map((comment) => (
-                <div key={comment.id} className="pb-2 border-b">
+                <div key={comment.id} className="pb-2">
                   <div>
                     <h3 className="font-bold text-gray-500">
                       {comment.user.displayUsername}

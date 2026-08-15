@@ -8,12 +8,14 @@ import { Spinner } from "../ui/spinner";
 import { createCommentAction } from "@/app/(actions)/comment";
 import { toast } from "@/components/ui/toast";
 import { ERROR_MESSAGES } from "@/util/error-messages";
+import { EmojiPickerPopover } from "./emoji-picker-popover";
 
 interface Props {
   postId: string | null;
 }
 
 export function CommentInput({ postId }: Props) {
+  const [isEmojiOpen, setIsEmojiOpen] = useState(false);
   const [isSending, startTransition] = useTransition();
   const [content, setContent] = useState("");
 
@@ -69,9 +71,21 @@ export function CommentInput({ postId }: Props) {
               <SendHorizonal className="size-6" />
             )}
           </Button>
-          <Button size="icon" variant="outline" disabled={isSending}>
-            <FaceGrinning className="size-6" />
-          </Button>
+
+          <EmojiPickerPopover
+            handleEmojiSelect={(emoji) =>
+              setContent((prev) => prev + emoji.emoji)
+            }
+          >
+            <Button
+              size="icon"
+              variant="outline"
+              disabled={isSending}
+              onClick={() => setIsEmojiOpen((prev) => !prev)}
+            >
+              <FaceGrinning className="size-6" />
+            </Button>
+          </EmojiPickerPopover>
         </div>
       </form>
     </div>
