@@ -21,6 +21,14 @@ export async function GET(request: Request) {
       where: {
         postId,
       },
+
+      include: {
+        user: {
+          select: {
+            displayUsername: true,
+          },
+        },
+      },
     });
     return Response.json({
       data: comments,

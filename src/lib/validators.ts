@@ -23,7 +23,6 @@ const baseSchema = z.object({
       "Username can only contain letters, numbers, underscores, and dots",
     )
     .transform((val) => (val.trim() === "" ? null : val.trim())),
-  displayUsername: z.string().optional().nullable(),
   password: z
     .string()
     .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/, { error: "" }),

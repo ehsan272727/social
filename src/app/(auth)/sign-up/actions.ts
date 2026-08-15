@@ -24,7 +24,6 @@ export async function signUpAction(
         name: data.name,
         password: data.password,
         username: data.username,
-        displayUsername: data.displayUsername,
       },
     });
     return { success_message: "User was added" };

@@ -80,7 +80,6 @@ export default function SignUp() {
     defaultValues: {
       name: "",
       username: "",
-      displayUsername: "",
       email: "",
       password: "",
       passwordConfirm: "",
@@ -165,14 +164,6 @@ export default function SignUp() {
               name="username"
               label="username"
               isRequired={true}
-            />
-            {/* ====================== */}
-            <FormInput<SignUpFormData>
-              formControl={control}
-              name="displayUsername"
-              label="display username"
-              placeholder={usernameValue}
-              description="The name other users see"
             />
             {/* ====================== */}
             <FormInput<SignUpFormData>
