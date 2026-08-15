@@ -6,9 +6,9 @@ import { CommentInput } from "../inputs/comment-input";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { ApiResponse } from "@/types/api/response";
-import { Comment } from "@/prisma/generated/client";
 import { CommentsListSkeleton } from "@/components/skeleton-ui/comment-skeleton";
 import { useEffect } from "react";
+import { CommentWithInfo } from "@/types/comment";
 
 interface Props {
   postId: string | null;
@@ -27,7 +27,9 @@ async function getComments(postId: string) {
 export function CommentsDialog({ postId, isOpen, handleOpenChange }: Props) {
   const isMobile = useMediaQuery("(max-width: 640px)");
 
-  const { data: comments, isFetching } = useQuery<ApiResponse<Comment[]>>({
+  const { data: comments, isFetching } = useQuery<
+    ApiResponse<CommentWithInfo[]>
+  >({
     queryKey: ["comments", postId],
     queryFn: () => getComments(postId!),
     enabled: postId !== null,
@@ -54,9 +56,16 @@ export function CommentsDialog({ postId, isOpen, handleOpenChange }: Props) {
         <div className="p-2">
           <CommentInput postId={postId} />
           {comments?.data && !isFetching && (
-            <div className="flex flex-col">
+            <div className="mt-5 flex flex-col gap-2">
               {comments.data.map((comment) => (
-                <div key={comment.id}>{comment.content}</div>
+                <div key={comment.id} className="pb-2 border-b">
+                  <div>
+                    <h3 className="font-bold text-gray-500">
+                      {comment.user.displayUsername}
+                    </h3>
+                    <p>{comment.content}</p>
+                  </div>
+                </div>
               ))}
             </div>
           )}
