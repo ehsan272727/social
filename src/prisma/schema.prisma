@@ -106,12 +106,17 @@ model Comment {
   postId    String
   userId    String
 
+  parentId String?
+
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
+  parent    Comment? @relation("commentReplies", fields: [parentId], references: [id] ,onDelete: Cascade)
+  replies   Comment[] @relation("commentReplies")
 
   @@index([postId])
   @@index([userId])
+  @@index([parentId])
 }
 
 model Like {
