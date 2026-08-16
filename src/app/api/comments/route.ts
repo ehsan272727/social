@@ -20,14 +20,21 @@ export async function GET(request: Request) {
     const comments = await prisma.comment.findMany({
       where: {
         postId,
+        parentId: {
+          equals: null,
+        },
       },
-
       include: {
         user: {
           select: {
             username: true,
             displayUsername: true,
             image: true,
+          },
+        },
+        _count: {
+          select: {
+            replies: true,
           },
         },
       },

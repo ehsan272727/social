@@ -2,18 +2,19 @@
 
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { Post } from "@/prisma/generated/client";
 import { ActionResponse } from "@/types/action";
 import { ERROR_MESSAGES } from "@/util/error-messages";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { headers } from "next/headers";
 
 interface Props {
+  parentCommentId: string;
   content: string;
   postId: string;
 }
 
-export async function createCommentAction({
+export async function createReplyAction({
+  parentCommentId,
   content,
   postId,
 }: Props): Promise<ActionResponse> {
@@ -31,13 +32,16 @@ export async function createCommentAction({
     };
   }
   try {
-    await prisma.comment.create({
-      data: {
-        content,
-        postId,
-        userId: session.user.id,
-      },
-    });
+    if (parentCommentId && content) {
+      await prisma.comment.create({
+        data: {
+          userId: session.user.id,
+          parentId: parentCommentId,
+          content,
+          postId,
+        },
+      });
+    }
 
     return { success_message: "comment was added" };
   } catch (error) {

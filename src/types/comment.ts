@@ -9,5 +9,10 @@ export type CommentWithInfo = Prisma.CommentGetPayload<{
         image: true;
       };
     };
+    _count: {
+      select: {
+        replies: true;
+      };
+    };
   };
 }>;

@@ -1,6 +1,8 @@
 import { CommentWithInfo } from "@/types/comment";
-import { User } from "lucide-react";
+import { ChevronDown, User } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
+import { ReplyInput } from "@/components/inputs/reply-input";
 
 interface Props {
   data: CommentWithInfo;
@@ -8,6 +10,7 @@ interface Props {
 
 export function Comment({ data }: Props) {
   const userPageLink = `/user/${data.user.username}`;
+  const [isReplyOpen, setIsReplyOpen] = useState(false);
 
   return (
     <div key={data.id} className="pb-2">
@@ -38,8 +41,29 @@ export function Comment({ data }: Props) {
             {data.user.displayUsername}
           </a>
           <p>{data.content}</p>
+
+          <button
+            onClick={() => setIsReplyOpen((prev) => !prev)}
+            className="mt-2 self-start opacity-70 hover:opacity-100"
+          >
+            Reply
+          </button>
+          {data._count.replies > 0 && (
+            <button className="mt-4 mr-8">
+              <div className="flex items-center gap-1">
+                <div className="w-5 h-px bg-primary"></div>
+                <span>View {data._count.replies} replies</span>
+                <ChevronDown className="size-5.5" />
+              </div>
+            </button>
+          )}
         </div>
       </div>
+      {isReplyOpen && (
+        <div className="mt-3">
+          <ReplyInput comment={data} />
+        </div>
+      )}
     </div>
   );
 }

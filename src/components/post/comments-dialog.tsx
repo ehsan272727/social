@@ -2,14 +2,14 @@
 
 import { Drawer, DrawerHeader, DrawerContent } from "@/components/ui/drawer";
 import { useMediaQuery } from "usehooks-ts";
-import { CommentInput } from "../inputs/comment-input";
+import { CommentInput } from "@/components/inputs/comment-input";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { ApiResponse } from "@/types/api/response";
 import { CommentsListSkeleton } from "@/components/skeleton-ui/comment-skeleton";
 import { useEffect } from "react";
 import { CommentWithInfo } from "@/types/comment";
-import { Comment } from "@/components/post/comment";
+import { Comment } from "@/components/post/comments";
 
 interface Props {
   postId: string | null;

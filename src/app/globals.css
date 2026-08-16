@@ -132,3 +132,8 @@
 body {
   position: relative;
 }
+
+button {
+  cursor: pointer;
+  user-select: none;
+}
