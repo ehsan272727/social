@@ -9,6 +9,7 @@ import { ApiResponse } from "@/types/api/response";
 import { CommentsListSkeleton } from "@/components/skeleton-ui/comment-skeleton";
 import { useEffect } from "react";
 import { CommentWithInfo } from "@/types/comment";
+import { Comment } from "@/components/post/comment";
 
 interface Props {
   postId: string | null;
@@ -58,14 +59,7 @@ export function CommentsDialog({ postId, isOpen, handleOpenChange }: Props) {
           {comments?.data && !isFetching && (
             <div className="mt-5 flex flex-col gap-5">
               {comments.data.map((comment) => (
-                <div key={comment.id} className="pb-2">
-                  <div>
-                    <h3 className="font-bold text-gray-500">
-                      {comment.user.displayUsername}
-                    </h3>
-                    <p>{comment.content}</p>
-                  </div>
-                </div>
+                <Comment key={comment.id} data={comment} />
               ))}
             </div>
           )}
