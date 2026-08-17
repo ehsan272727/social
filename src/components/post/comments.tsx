@@ -88,13 +88,13 @@ export function Comment({ data }: Props) {
               </div>
             </button>
           )}
-          {replies &&
-            !isFetching &&
-            replies.data?.map((reply) => (
-              <Comment key={reply.id} data={reply} />
-            ))}
-          {parentId && isFetching && <CommentSkeleton />}
         </div>
+      </div>
+      <div className={!data.parentId ? "ml-9" : ""}>
+        {replies &&
+          !isFetching &&
+          replies.data?.map((reply) => <Comment key={reply.id} data={reply} />)}
+        {parentId && isFetching && <CommentSkeleton />}
       </div>
       {isReplyOpen && (
         <div className="mt-3">
