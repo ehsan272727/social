@@ -7,6 +7,7 @@ import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { ApiResponse } from "@/types/api/response";
 import { CommentSkeleton } from "../skeleton-ui/comment-skeleton";
+import { CommentMenu } from "./comment-menu";
 
 interface Props {
   data: CommentWithInfo;
@@ -96,7 +97,9 @@ export function Comment({ data }: Props) {
             </button>
           )}
         </div>
+        <CommentMenu />
       </div>
+      {/* ---------- Replies ---------- */}
       <div className={!data.parentId ? "ml-9" : ""}>
         {replies &&
           !isFetching &&
