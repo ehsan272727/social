@@ -1,5 +1,5 @@
 import { CommentWithInfo } from "@/types/comment";
-import { ChevronDown, ChevronUp, User } from "lucide-react";
+import { ChevronDown, ChevronUp, Play, Reply, User } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { ReplyInput } from "@/components/inputs/reply-input";
@@ -28,7 +28,7 @@ export function Comment({ data }: Props) {
   const { data: replies, isFetching } = useQuery<
     ApiResponse<CommentWithInfo[]>
   >({
-    queryKey: ["comments", parentId],
+    queryKey: ["replies", parentId],
     queryFn: () => getReplies(parentId!),
     enabled: parentId !== null,
   });
@@ -59,18 +59,25 @@ export function Comment({ data }: Props) {
         </div>
         <div className="flex flex-col">
           <a
-            className="font-bold text-gray-500"
+            className="flex items-center gap-1 font-bold text-gray-500"
             href={userPageLink}
             aria-label="username"
           >
             {data.user.displayUsername}
+            {data.parent && data.parent?.parent && (
+              <>
+                <Play className="size-3 fill-primary" />
+                {data.parent.user.displayUsername}
+              </>
+            )}
           </a>
           <p>{data.content}</p>
 
           <button
             onClick={() => setIsReplyOpen((prev) => !prev)}
-            className="mt-2 self-start opacity-70 hover:opacity-100"
+            className="mt-2 self-start flex items-center gap-1 opacity-70 hover:opacity-100"
           >
+            <Reply className="size-4.5 sm:size-5" />
             Reply
           </button>
           {data._count.replies > 0 && (

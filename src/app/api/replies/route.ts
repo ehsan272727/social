@@ -29,6 +29,20 @@ export async function GET(request: Request) {
             image: true,
           },
         },
+        parent: {
+          select: {
+            user: {
+              select: {
+                displayUsername: true,
+              },
+            },
+            parent: {
+              select: {
+                parentId: true,
+              },
+            },
+          },
+        },
         _count: {
           select: {
             replies: true,
