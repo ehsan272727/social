@@ -2,7 +2,7 @@
 
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { FaceGrinning, SendHorizonal } from "lucide-react";
+import { FaceGrinning, SendHorizonal, X } from "lucide-react";
 import { SubmitEvent, useState, useTransition } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "@/components/ui/toast";
@@ -14,9 +14,10 @@ import { createReplyAction } from "@/app/(actions)/(post)/reply";
 
 interface Props {
   comment: CommentWithInfo;
+  closeReplyInput: () => void;
 }
 
-export function ReplyInput({ comment }: Props) {
+export function ReplyInput({ comment, closeReplyInput }: Props) {
   const [isSending, startTransition] = useTransition();
   const [content, setContent] = useState("");
 
@@ -25,6 +26,7 @@ export function ReplyInput({ comment }: Props) {
       e.preventDefault();
       if (content.trim().length === 0) {
         setContent("");
+        closeReplyInput();
         return;
       }
 
@@ -40,6 +42,7 @@ export function ReplyInput({ comment }: Props) {
           return;
         }
         setContent("");
+        closeReplyInput();
       } catch (error) {
         toast.add({
           type: "error",
@@ -59,29 +62,34 @@ export function ReplyInput({ comment }: Props) {
           placeholder={`Replying to ${comment?.user.displayUsername}`}
           className="min-w-0  flex-1 resize-none field-sizing-fixed"
         ></Textarea>
-        <div className="flex flex-col gap-1.5">
-          <Button
-            size="icon"
-            variant="outline"
-            type="submit"
-            disabled={isSending || content.length === 0}
-          >
-            {isSending ? (
-              <Spinner className="size-6" />
-            ) : (
-              <SendHorizonal className="size-6" />
-            )}
-          </Button>
-
-          <EmojiPickerPopover
-            handleEmojiSelect={(emoji) =>
-              setContent((prev) => prev + emoji.emoji)
-            }
-          >
-            <Button size="icon" variant="outline" disabled={isSending}>
-              <FaceGrinning className="size-6" />
+        <div className="flex items-center gap-1.5">
+          <div className="flex flex-col gap-1.5">
+            <Button
+              size="icon"
+              variant="outline"
+              type="submit"
+              disabled={isSending || content.trim().length === 0}
+            >
+              {isSending ? (
+                <Spinner className="size-6" />
+              ) : (
+                <SendHorizonal className="size-6" />
+              )}
             </Button>
-          </EmojiPickerPopover>
+
+            <EmojiPickerPopover
+              handleEmojiSelect={(emoji) =>
+                setContent((prev) => prev + emoji.emoji)
+              }
+            >
+              <Button size="icon" variant="outline" disabled={isSending}>
+                <FaceGrinning className="size-6" />
+              </Button>
+            </EmojiPickerPopover>
+          </div>
+          <Button size="icon" variant="outline" onClick={closeReplyInput}>
+            <X className="size-6 text-red-600" />
+          </Button>
         </div>
       </form>
     </div>

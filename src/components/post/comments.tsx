@@ -98,7 +98,10 @@ export function Comment({ data }: Props) {
       </div>
       {isReplyOpen && (
         <div className="mt-3">
-          <ReplyInput comment={data} />
+          <ReplyInput
+            comment={data}
+            closeReplyInput={() => setIsReplyOpen(false)}
+          />
         </div>
       )}
     </div>
