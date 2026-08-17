@@ -6,6 +6,7 @@ import { ReplyInput } from "@/components/inputs/reply-input";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { ApiResponse } from "@/types/api/response";
+import { CommentSkeleton } from "../skeleton-ui/comment-skeleton";
 
 interface Props {
   data: CommentWithInfo;
@@ -73,7 +74,7 @@ export function Comment({ data }: Props) {
             Reply
           </button>
           {data._count.replies > 0 && (
-            <button className="mt-4 mr-8" onClick={handleReplyToggle}>
+            <button className="mt-4" onClick={handleReplyToggle}>
               <div className="flex items-center gap-1">
                 <div className="w-5 h-px bg-primary"></div>
                 <span>
@@ -92,6 +93,7 @@ export function Comment({ data }: Props) {
             replies.data?.map((reply) => (
               <Comment key={reply.id} data={reply} />
             ))}
+          {parentId && isFetching && <CommentSkeleton />}
         </div>
       </div>
       {isReplyOpen && (
