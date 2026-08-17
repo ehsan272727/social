@@ -1,20 +1,44 @@
 import { CommentWithInfo } from "@/types/comment";
-import { ChevronDown, User } from "lucide-react";
+import { ChevronDown, ChevronUp, User } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { ReplyInput } from "@/components/inputs/reply-input";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import { ApiResponse } from "@/types/api/response";
 
 interface Props {
   data: CommentWithInfo;
 }
 
+async function getReplies(parentId: string) {
+  const response = await axios.get("/api/replies", {
+    params: { parentId },
+  });
+
+  return response.data;
+}
+
 export function Comment({ data }: Props) {
   const userPageLink = `/user/${data.user.username}`;
   const [isReplyOpen, setIsReplyOpen] = useState(false);
+  const [parentId, setParentId] = useState<string | null>(null);
+
+  const { data: replies, isFetching } = useQuery<
+    ApiResponse<CommentWithInfo[]>
+  >({
+    queryKey: ["comments", parentId],
+    queryFn: () => getReplies(parentId!),
+    enabled: parentId !== null,
+  });
+
+  function handleReplyToggle() {
+    setParentId((prev) => (prev === null ? data.id : null));
+  }
 
   return (
     <div key={data.id} className="pb-2">
-      <div className="flex gap-2">
+      <div className="mt-2 flex gap-2">
         <div className="h-fit">
           <div className="border rounded-full">
             <a href={userPageLink}>
@@ -49,14 +73,25 @@ export function Comment({ data }: Props) {
             Reply
           </button>
           {data._count.replies > 0 && (
-            <button className="mt-4 mr-8">
+            <button className="mt-4 mr-8" onClick={handleReplyToggle}>
               <div className="flex items-center gap-1">
                 <div className="w-5 h-px bg-primary"></div>
-                <span>View {data._count.replies} replies</span>
-                <ChevronDown className="size-5.5" />
+                <span>
+                  {parentId ? "Hide" : "View"} {data._count.replies} replies
+                </span>
+                {parentId ? (
+                  <ChevronUp />
+                ) : (
+                  <ChevronDown className="size-5.5" />
+                )}
               </div>
             </button>
           )}
+          {replies &&
+            !isFetching &&
+            replies.data?.map((reply) => (
+              <Comment key={reply.id} data={reply} />
+            ))}
         </div>
       </div>
       {isReplyOpen && (
