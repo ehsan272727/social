@@ -4,13 +4,19 @@ import Image from "next/image";
 import { useState } from "react";
 import { ReplyInput } from "@/components/inputs/reply-input";
 import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { ApiResponse } from "@/types/api/response";
 import { CommentSkeleton } from "../skeleton-ui/comment-skeleton";
 import { CommentMenu } from "./comment-menu";
+import { authClient } from "@/lib/auth-client";
+import { deleteCommentAction } from "@/app/(actions)/post/comment";
 
 interface Props {
+  isReply?: boolean;
   data: CommentWithInfo;
+  isDeletingComment?: boolean;
+  handleDeleteComment?: (commentId: string) => void;
+  handleDeleteReply?: (commentId: string) => void;
 }
 
 async function getReplies(parentId: string) {
@@ -21,10 +27,16 @@ async function getReplies(parentId: string) {
   return response.data;
 }
 
-export function Comment({ data }: Props) {
+export function Comment({
+  data,
+  isReply = false,
+  handleDeleteComment,
+  isDeletingComment = false,
+}: Props) {
   const userPageLink = `/user/${data.user.username}`;
   const [isReplyOpen, setIsReplyOpen] = useState(false);
   const [parentId, setParentId] = useState<string | null>(null);
+  const { data: session } = authClient.useSession();
 
   const { data: replies, isFetching } = useQuery<
     ApiResponse<CommentWithInfo[]>
@@ -33,6 +45,12 @@ export function Comment({ data }: Props) {
     queryFn: () => getReplies(parentId!),
     enabled: parentId !== null,
   });
+
+  const { isPending: isDeletingReply, mutate: deleteReplyMutate } = useMutation(
+    {
+      mutationFn: (commentId: string) => deleteCommentAction({ commentId }),
+    },
+  );
 
   function handleReplyToggle() {
     setParentId((prev) => (prev === null ? data.id : null));
@@ -64,6 +82,7 @@ export function Comment({ data }: Props) {
             href={userPageLink}
             aria-label="username"
           >
+            {/* ----- Show which user the comment is repling to in level 2 upwards comments */}
             {data.user.displayUsername}
             {data.parent && data.parent?.parent && (
               <>
@@ -73,7 +92,7 @@ export function Comment({ data }: Props) {
             )}
           </a>
           <p>{data.content}</p>
-
+          {/* ---- Reply button for opening the reply input ---- */}
           <button
             onClick={() => setIsReplyOpen((prev) => !prev)}
             className="mt-2 self-start flex items-center gap-1 opacity-70 hover:opacity-100"
@@ -81,8 +100,12 @@ export function Comment({ data }: Props) {
             <Reply className="size-4.5 sm:size-5" />
             Reply
           </button>
+          {/* ------- Show replies Button ------- */}
           {data._count.replies > 0 && (
-            <button className="mt-4" onClick={handleReplyToggle}>
+            <button
+              onClick={handleReplyToggle}
+              className="mt-4 opacity-70 hover:opacity-100"
+            >
               <div className="flex items-center gap-1">
                 <div className="w-5 h-px bg-primary"></div>
                 <span>
@@ -97,15 +120,33 @@ export function Comment({ data }: Props) {
             </button>
           )}
         </div>
-        <CommentMenu />
+        {/* Show comment menu if the comment belongs to the logged in user */}
+        {session && session.user.id === data.userId && (
+          <CommentMenu
+            handleDeleteComment={
+              isReply
+                ? () => deleteReplyMutate(data.id)
+                : () => handleDeleteComment!(data.id)
+            }
+            isDeleting={isReply ? isDeletingReply : isDeletingComment}
+          />
+        )}
       </div>
       {/* ---------- Replies ---------- */}
       <div className={!data.parentId ? "ml-9" : ""}>
         {replies &&
           !isFetching &&
-          replies.data?.map((reply) => <Comment key={reply.id} data={reply} />)}
+          replies.data?.map((reply) => (
+            <Comment
+              key={reply.id}
+              data={reply}
+              isReply={true}
+              handleDeleteReply={() => deleteReplyMutate(reply.id)}
+            />
+          ))}
         {parentId && isFetching && <CommentSkeleton />}
       </div>
+      {/* ---------- Open reply input on reply button click ------- */}
       {isReplyOpen && (
         <div className="mt-3">
           <ReplyInput

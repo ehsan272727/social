@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { FaceGrinning, SendHorizonal } from "lucide-react";
 import { SubmitEvent, useState, useTransition } from "react";
 import { Spinner } from "../ui/spinner";
-import { createCommentAction } from "@/app/(actions)/(post)/comment";
+import { createCommentAction } from "@/app/(actions)/post/comment";
 import { toast } from "@/components/ui/toast";
 import { ERROR_MESSAGES } from "@/util/error-messages";
 import { EmojiPickerPopover } from "./emoji-picker-popover";

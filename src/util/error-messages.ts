@@ -1,10 +1,13 @@
 export const ERROR_MESSAGES = {
   auth: {
     not_logged_in: "you must be logged in",
+    not_authorized: "you are not authorized for this action",
   },
 
   comment: {
     empty: "comment is empty",
+    empty_id: "comment id is not present",
+    not_found: "comment not found",
   },
 
   unknown: {

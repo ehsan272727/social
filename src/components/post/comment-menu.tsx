@@ -8,9 +8,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-interface Props {}
+interface Props {
+  isDeleting: boolean;
+  handleDeleteComment: () => void;
+}
 
-export function CommentMenu({}: Props) {
+export function CommentMenu({ isDeleting, handleDeleteComment }: Props) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -23,7 +26,9 @@ export function CommentMenu({}: Props) {
       <DropdownMenuContent>
         <DropdownMenuGroup>
           <DropdownMenuItem>Edit</DropdownMenuItem>
-          <DropdownMenuItem>Delete</DropdownMenuItem>
+          <DropdownMenuItem disabled={isDeleting} onClick={handleDeleteComment}>
+            Delete
+          </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -10,7 +10,7 @@ import { ERROR_MESSAGES } from "@/util/error-messages";
 import { EmojiPickerPopover } from "./emoji-picker-popover";
 import { CommentWithInfo } from "@/types/comment";
 import clsx from "clsx";
-import { createReplyAction } from "@/app/(actions)/(post)/reply";
+import { createReplyAction } from "@/app/(actions)/post/reply";
 
 interface Props {
   comment: CommentWithInfo;

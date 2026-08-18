@@ -3,13 +3,14 @@
 import { Drawer, DrawerHeader, DrawerContent } from "@/components/ui/drawer";
 import { useMediaQuery } from "usehooks-ts";
 import { CommentInput } from "@/components/inputs/comment-input";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { ApiResponse } from "@/types/api/response";
 import { CommentsListSkeleton } from "@/components/skeleton-ui/comment-skeleton";
 import { useEffect } from "react";
 import { CommentWithInfo } from "@/types/comment";
 import { Comment } from "@/components/post/comments";
+import { deleteCommentAction } from "@/app/(actions)/post/comment";
 
 interface Props {
   postId: string | null;
@@ -27,6 +28,7 @@ async function getComments(postId: string) {
 
 export function CommentsDialog({ postId, isOpen, handleOpenChange }: Props) {
   const isMobile = useMediaQuery("(max-width: 640px)");
+  const queryClient = useQueryClient();
 
   const { data: comments, isFetching } = useQuery<
     ApiResponse<CommentWithInfo[]>
@@ -35,7 +37,14 @@ export function CommentsDialog({ postId, isOpen, handleOpenChange }: Props) {
     queryFn: () => getComments(postId!),
     enabled: postId !== null,
   });
-  const queryClient = useQueryClient();
+
+  const {
+    mutate: deleteCommentMutate,
+    isPending: isDeletingComment,
+    variables,
+  } = useMutation({
+    mutationFn: (commentId: string) => deleteCommentAction({ commentId }),
+  });
 
   useEffect(() => {
     if (isOpen && postId) {
@@ -59,7 +68,16 @@ export function CommentsDialog({ postId, isOpen, handleOpenChange }: Props) {
           {comments?.data && !isFetching && (
             <div className="mt-5 flex flex-col gap-5">
               {comments.data.map((comment) => (
-                <Comment key={comment.id} data={comment} />
+                <Comment
+                  key={comment.id}
+                  data={comment}
+                  handleDeleteComment={(commentId) =>
+                    deleteCommentMutate(commentId)
+                  }
+                  isDeletingComment={
+                    isDeletingComment && variables === comment.id
+                  }
+                />
               ))}
             </div>
           )}
