@@ -33,7 +33,7 @@ export function Comment({
   handleDeleteComment,
   isDeletingComment = false,
 }: Props) {
-  const userPageLink = `/user/${data.user.username}`;
+  const userPageLink = data ? `/user/${data.user.username}` : "#";
   const [isReplyOpen, setIsReplyOpen] = useState(false);
   const [parentId, setParentId] = useState<string | null>(null);
   const { data: session } = authClient.useSession();

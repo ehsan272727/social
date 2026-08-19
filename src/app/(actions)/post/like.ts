@@ -14,7 +14,7 @@ interface Props {
 export async function LikeAction({
   postId,
   isLiked,
-}: Props): Promise<ActionResponse> {
+}: Props): Promise<ActionResponse<null>> {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -41,7 +41,8 @@ export async function LikeAction({
         },
       });
     }
-    return { success_message: "Like was toggled" };
+
+    return { data: null };
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError) {
       if (error.code === "P2002") {

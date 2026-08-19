@@ -8,6 +8,7 @@ export const ERROR_MESSAGES = {
     empty: "comment is empty",
     empty_id: "comment id is not present",
     not_found: "comment not found",
+    no_post_id: "no post id was present",
   },
 
   unknown: {

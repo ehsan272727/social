@@ -2,7 +2,9 @@
 
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { Comment } from "@/prisma/generated/client";
 import { ActionResponse } from "@/types/action";
+import { CommentWithInfo } from "@/types/comment";
 import { ERROR_MESSAGES } from "@/util/error-messages";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { headers } from "next/headers";
@@ -15,7 +17,7 @@ interface CreateProps {
 export async function createCommentAction({
   content,
   postId,
-}: CreateProps): Promise<ActionResponse> {
+}: CreateProps): Promise<ActionResponse<CommentWithInfo>> {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -29,18 +31,51 @@ export async function createCommentAction({
       error: ERROR_MESSAGES.comment.empty,
     };
   }
-  try {
-    if (postId) {
-      await prisma.comment.create({
-        data: {
-          content,
-          postId,
-          userId: session.user.id,
-        },
-      });
-    }
 
-    return { success_message: "comment was added" };
+  if (!postId) {
+    return {
+      error: ERROR_MESSAGES.comment.no_post_id,
+    };
+  }
+
+  try {
+    const addedComment: CommentWithInfo = await prisma.comment.create({
+      data: {
+        content,
+        postId,
+        userId: session.user.id,
+      },
+      include: {
+        user: {
+          select: {
+            username: true,
+            displayUsername: true,
+            image: true,
+          },
+        },
+        parent: {
+          select: {
+            user: {
+              select: {
+                displayUsername: true,
+              },
+            },
+            parent: {
+              select: {
+                parentId: true,
+              },
+            },
+          },
+        },
+        _count: {
+          select: {
+            replies: true,
+          },
+        },
+      },
+    });
+
+    return { data: addedComment };
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError) {
       return { error: error.message };

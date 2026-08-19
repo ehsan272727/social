@@ -3,12 +3,15 @@
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { FaceGrinning, SendHorizonal } from "lucide-react";
-import { SubmitEvent, useState, useTransition } from "react";
+import { SubmitEvent, use, useState, useTransition } from "react";
 import { Spinner } from "../ui/spinner";
 import { createCommentAction } from "@/app/(actions)/post/comment";
 import { toast } from "@/components/ui/toast";
 import { ERROR_MESSAGES } from "@/util/error-messages";
 import { EmojiPickerPopover } from "./emoji-picker-popover";
+import { useQueryClient } from "@tanstack/react-query";
+import { ApiResponse } from "@/types/api/response";
+import { CommentWithInfo } from "@/types/comment";
 
 interface Props {
   postId: string | null;
@@ -17,6 +20,8 @@ interface Props {
 export function CommentInput({ postId }: Props) {
   const [isSending, startTransition] = useTransition();
   const [content, setContent] = useState("");
+
+  const queryClient = useQueryClient();
 
   if (!postId) {
     return null;
@@ -31,12 +36,21 @@ export function CommentInput({ postId }: Props) {
       }
 
       try {
-        const result = await createCommentAction({ postId, content });
+        const newComment = await createCommentAction({ postId, content });
 
-        if ("error" in result) {
-          toast.add({ type: "error", description: result.error });
+        if ("error" in newComment) {
+          toast.add({ type: "error", description: newComment.error });
           return;
         }
+
+        queryClient.setQueryData<ApiResponse<CommentWithInfo[]>>(
+          ["comments", postId],
+          (old) => {
+            if (!old?.data) return { data: [newComment.data] };
+            return { data: [newComment.data, ...old.data] };
+          },
+        );
+
         setContent("");
       } catch (error) {
         toast.add({
