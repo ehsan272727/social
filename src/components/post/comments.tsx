@@ -55,6 +55,20 @@ export function Comment({
   const { isPending: isDeletingReply, mutate: deleteReplyMutate } = useMutation(
     {
       mutationFn: (commentId: string) => deleteCommentAction({ commentId }),
+
+      onSuccess: (response) => {
+        queryClient.setQueryData<ApiResponse<CommentWithInfo[]>>(
+          ["replies", data.parentId],
+
+          (prev) => {
+            if (!prev?.data) return { data: [] };
+
+            return {
+              data: prev.data.filter((data) => data.id !== response.data),
+            };
+          },
+        );
+      },
     },
   );
 
