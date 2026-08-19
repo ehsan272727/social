@@ -1,10 +1,10 @@
 import { CommentWithInfo } from "@/types/comment";
 import { ChevronDown, ChevronUp, Play, Reply, User } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ReplyInput } from "@/components/inputs/reply-input";
 import axios from "axios";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiResponse } from "@/types/api/response";
 import { CommentSkeleton } from "../skeleton-ui/comment-skeleton";
 import { CommentMenu } from "./comment-menu";
@@ -33,18 +33,24 @@ export function Comment({
   handleDeleteComment,
   isDeletingComment = false,
 }: Props) {
-  const userPageLink = data ? `/user/${data.user.username}` : "#";
+  const userPageLink = data ? `/profile/${data.user.username}` : "#";
   const [isReplyOpen, setIsReplyOpen] = useState(false);
-  const [parentId, setParentId] = useState<string | null>(null);
+  const [showReplies, setShowReplies] = useState(false);
   const { data: session } = authClient.useSession();
+
+  const queryClient = useQueryClient();
 
   const { data: replies, isFetching } = useQuery<
     ApiResponse<CommentWithInfo[]>
   >({
-    queryKey: ["replies", parentId],
-    queryFn: () => getReplies(parentId!),
-    enabled: parentId !== null,
+    queryKey: ["replies", data.id],
+    queryFn: () => getReplies(data.id),
+    enabled: showReplies,
   });
+
+  const repliesCount = useMemo(() => {
+    return replies?.data ? replies.data.length : data._count.replies;
+  }, [replies?.data, data._count.replies]);
 
   const { isPending: isDeletingReply, mutate: deleteReplyMutate } = useMutation(
     {
@@ -53,12 +59,12 @@ export function Comment({
   );
 
   function handleReplyToggle() {
-    setParentId((prev) => (prev === null ? data.id : null));
+    setShowReplies((prev) => !prev);
   }
 
   useEffect(() => {
-    console.log(replies);
-  }, [replies]);
+    queryClient.invalidateQueries({ queryKey: ["replies", data.id] });
+  }, [showReplies]);
 
   return (
     <div key={data.id} className="pb-2">
@@ -98,14 +104,17 @@ export function Comment({
           <p>{data.content}</p>
           {/* ---- Reply button for opening the reply input ---- */}
           <button
-            onClick={() => setIsReplyOpen((prev) => !prev)}
+            onClick={() => {
+              setShowReplies(true);
+              setIsReplyOpen((prev) => !prev);
+            }}
             className="mt-2 self-start flex items-center gap-1 opacity-70 hover:opacity-100"
           >
             <Reply className="size-4.5 sm:size-5" />
             Reply
           </button>
           {/* ------- Show replies Button ------- */}
-          {data._count.replies > 0 && (
+          {repliesCount > 0 && (
             <button
               onClick={handleReplyToggle}
               className="mt-4 opacity-70 hover:opacity-100"
@@ -113,9 +122,9 @@ export function Comment({
               <div className="flex items-center gap-1">
                 <div className="w-5 h-px bg-primary"></div>
                 <span>
-                  {parentId ? "Hide" : "View"} {data._count.replies} replies
+                  {showReplies ? "Hide" : "View"} {repliesCount} replies
                 </span>
-                {parentId ? (
+                {showReplies ? (
                   <ChevronUp />
                 ) : (
                   <ChevronDown className="size-5.5" />
@@ -138,7 +147,8 @@ export function Comment({
       </div>
       {/* ---------- Replies ---------- */}
       <div className={!data.parentId ? "ml-9" : ""}>
-        {replies?.data &&
+        {showReplies &&
+          replies?.data &&
           !isFetching &&
           replies.data.map((reply) => (
             <Comment
@@ -148,7 +158,7 @@ export function Comment({
               handleDeleteReply={() => deleteReplyMutate(reply.id)}
             />
           ))}
-        {parentId && isFetching && <CommentSkeleton />}
+        {showReplies && isFetching && <CommentSkeleton />}
       </div>
       {/* ---------- Open reply input on reply button click ------- */}
       {isReplyOpen && (
