@@ -25,8 +25,6 @@ export function ReplyInput({ comment, closeReplyInput }: Props) {
 
   const queryClient = useQueryClient();
 
-  console.log("Old data:", queryClient.getQueryData(["replies", comment.id]));
-
   const handleCommentSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     startTransition(async () => {
       e.preventDefault();
@@ -50,15 +48,9 @@ export function ReplyInput({ comment, closeReplyInput }: Props) {
         queryClient.setQueryData<ApiResponse<CommentWithInfo[]>>(
           ["replies", comment.id],
           (old) => {
-            console.log(old);
             if (!old?.data) return { data: [newReply.data] };
             return { data: [newReply.data, ...old.data] };
           },
-        );
-
-        console.log(
-          "New data:",
-          queryClient.getQueryData(["replies", comment.id]),
         );
 
         setContent("");

@@ -2,8 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { Comment } from "@/prisma/generated/client";
-import { ActionResponse } from "@/types/action";
+import { ApiResponse } from "@/types/api/response";
 import { CommentWithInfo } from "@/types/comment";
 import { ERROR_MESSAGES } from "@/util/error-messages";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
@@ -17,7 +16,7 @@ interface CreateProps {
 export async function createCommentAction({
   content,
   postId,
-}: CreateProps): Promise<ActionResponse<CommentWithInfo>> {
+}: CreateProps): Promise<ApiResponse<CommentWithInfo>> {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -90,7 +89,7 @@ interface DeleteProps {
 
 export async function deleteCommentAction({
   commentId,
-}: DeleteProps): Promise<ActionResponse> {
+}: DeleteProps): Promise<ApiResponse<string>> {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -106,19 +105,19 @@ export async function deleteCommentAction({
   }
 
   try {
-    const result = await prisma.comment.deleteMany({
+    const deletedComment = await prisma.comment.deleteMany({
       where: {
         id: commentId,
         userId: session.user.id,
       },
     });
-    if (result.count === 0) {
+    if (deletedComment.count === 0) {
       return {
         error: `${ERROR_MESSAGES.comment.not_found} or ${ERROR_MESSAGES.auth.not_authorized}`,
       };
     }
 
-    return { success_message: "comment was added" };
+    return { data: commentId };
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError) {
       return { error: error.message };

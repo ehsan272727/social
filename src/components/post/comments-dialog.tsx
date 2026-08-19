@@ -44,6 +44,20 @@ export function CommentsDialog({ postId, isOpen, handleOpenChange }: Props) {
     variables,
   } = useMutation({
     mutationFn: (commentId: string) => deleteCommentAction({ commentId }),
+
+    onSuccess: (response) => {
+      queryClient.setQueryData<ApiResponse<CommentWithInfo[]>>(
+        ["comments", postId],
+
+        (prev) => {
+          if (!prev?.data) return { data: [] };
+
+          return {
+            data: prev.data.filter((data) => data.id !== response.data),
+          };
+        },
+      );
+    },
   });
 
   useEffect(() => {
