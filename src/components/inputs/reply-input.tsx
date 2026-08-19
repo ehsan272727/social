@@ -11,6 +11,8 @@ import { EmojiPickerPopover } from "./emoji-picker-popover";
 import { CommentWithInfo } from "@/types/comment";
 import clsx from "clsx";
 import { createReplyAction } from "@/app/(actions)/post/reply";
+import { useQueryClient } from "@tanstack/react-query";
+import { ApiResponse } from "@/types/api/response";
 
 interface Props {
   comment: CommentWithInfo;
@@ -20,6 +22,10 @@ interface Props {
 export function ReplyInput({ comment, closeReplyInput }: Props) {
   const [isSending, startTransition] = useTransition();
   const [content, setContent] = useState("");
+
+  const queryClient = useQueryClient();
+
+  console.log("Old data:", queryClient.getQueryData(["replies", comment.id]));
 
   const handleCommentSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     startTransition(async () => {
@@ -31,16 +37,30 @@ export function ReplyInput({ comment, closeReplyInput }: Props) {
       }
 
       try {
-        const result = await createReplyAction({
+        const newReply = await createReplyAction({
           parentCommentId: comment.id,
           content,
           postId: comment.postId,
         });
 
-        if ("error" in result) {
-          toast.add({ type: "error", description: result.error });
+        if ("error" in newReply) {
+          toast.add({ type: "error", description: newReply.error });
           return;
         }
+        queryClient.setQueryData<ApiResponse<CommentWithInfo[]>>(
+          ["replies", comment.id],
+          (old) => {
+            console.log(old);
+            if (!old?.data) return { data: [newReply.data] };
+            return { data: [newReply.data, ...old.data] };
+          },
+        );
+
+        console.log(
+          "New data:",
+          queryClient.getQueryData(["replies", comment.id]),
+        );
+
         setContent("");
         closeReplyInput();
       } catch (error) {

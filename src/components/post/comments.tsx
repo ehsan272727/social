@@ -1,7 +1,7 @@
 import { CommentWithInfo } from "@/types/comment";
 import { ChevronDown, ChevronUp, Play, Reply, User } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ReplyInput } from "@/components/inputs/reply-input";
 import axios from "axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -55,6 +55,10 @@ export function Comment({
   function handleReplyToggle() {
     setParentId((prev) => (prev === null ? data.id : null));
   }
+
+  useEffect(() => {
+    console.log(replies);
+  }, [replies]);
 
   return (
     <div key={data.id} className="pb-2">
@@ -134,9 +138,9 @@ export function Comment({
       </div>
       {/* ---------- Replies ---------- */}
       <div className={!data.parentId ? "ml-9" : ""}>
-        {replies &&
+        {replies?.data &&
           !isFetching &&
-          replies.data?.map((reply) => (
+          replies.data.map((reply) => (
             <Comment
               key={reply.id}
               data={reply}
