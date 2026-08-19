@@ -79,8 +79,10 @@ export function CommentsDialog({ postId, isOpen, handleOpenChange }: Props) {
         </DrawerHeader>
         <div className="p-2">
           <CommentInput postId={postId} />
+        </div>
+        <div className="p-2 overflow-y-auto">
           {comments?.data && !isFetching && (
-            <div className="mt-5 flex flex-col gap-5">
+            <div className="mt-2 flex flex-col gap-5">
               {comments.data.map((comment) => (
                 <Comment
                   key={comment.id}
