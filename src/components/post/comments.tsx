@@ -10,6 +10,7 @@ import { CommentSkeleton } from "../skeleton-ui/comment-skeleton";
 import { CommentMenu } from "./comment-menu";
 import { authClient } from "@/lib/auth-client";
 import { deleteCommentAction } from "@/app/(actions)/post/comment";
+import { api } from "@/lib/axios-instance";
 
 interface Props {
   isReply?: boolean;
@@ -20,7 +21,7 @@ interface Props {
 }
 
 async function getReplies(parentId: string) {
-  const response = await axios.get("/api/replies", {
+  const response = await api.get("/replies", {
     params: { parentId },
   });
 
