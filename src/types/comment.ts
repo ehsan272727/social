@@ -30,3 +30,9 @@ export type CommentWithInfo = Prisma.CommentGetPayload<{
     };
   };
 }>;
+
+export interface CommentEditState {
+  enabled: boolean;
+  commentId: string;
+  textContent: string;
+}
