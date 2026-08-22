@@ -5,6 +5,7 @@ export type PostWithInfo = Prisma.PostGetPayload<{
     user: {
       select: {
         username: true;
+        image: true;
       };
     };
     _count: {

@@ -14,6 +14,7 @@ export default async function Home() {
       user: {
         select: {
           username: true,
+          image: true,
         },
       },
       _count: {

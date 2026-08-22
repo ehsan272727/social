@@ -2,12 +2,14 @@
 
 import { PostWithInfo } from "@/types/post";
 import clsx from "clsx";
-import { MessageCircle, ThumbsUp } from "lucide-react";
+import { MessageCircle, ThumbsUp, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { LikeAction } from "@/app/(actions)/post/like";
 import { toast } from "@/components/ui/toast";
 import { authClient } from "@/lib/auth-client";
+import Image from "next/image";
+import { getProfileLink } from "@/lib/get-profile-link";
 
 interface Props {
   post: PostWithInfo;
@@ -32,6 +34,7 @@ export function Post({ post, selectPostId, openSignInDialog }: Props) {
     count: post._count.likes,
   });
   const formattedLikes = formatLikes(likeState.count);
+  const userProfileLink = getProfileLink(post.user.username);
 
   const handleLikeToggle = async () => {
     if (!session) {
@@ -62,7 +65,24 @@ export function Post({ post, selectPostId, openSignInDialog }: Props) {
   return (
     <>
       <div className="flex flex-col gap-2 rounded-md border">
-        <div className="p-2 border-b">{post.user.username}</div>
+        <div className="flex items-center p-2 border-b">
+          <div className="w-fit border rounded-full">
+            <a href={userProfileLink}>
+              <span className="w-7 h-7 sm:w-8 s:h-8 rounded-full">
+                {post.user.image ? (
+                  <Image
+                    src={post.user.image}
+                    alt="profile image is not available"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User className="size-7 sm:size-8 opacity-50" />
+                )}
+              </span>
+            </a>
+          </div>
+          <div className="p-2">{post.user.username}</div>
+        </div>
         <h2 className="p-2 font-bold">{post.title}</h2>
         {post.content && <p className="p-2">{post.content}</p>}
         <div className="flex gap-2 items-center p-2 border-t">
