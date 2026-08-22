@@ -9,7 +9,7 @@ import {
   SquarePlus,
   UserRoundArrowLeft,
 } from "lucide-react";
-import { NavbarProps } from "./navbar";
+import { NavbarProps } from "../navbar";
 
 export function MobileNav({
   isSignedIn,

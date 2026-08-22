@@ -2,13 +2,13 @@
 
 import { auth } from "@/lib/auth";
 import { SignUpFormOutput, SignUpServerSchema } from "@/lib/validators";
-import { ActionResponse } from "@/types/action";
+import { ApiResponse } from "@/types/api/response";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { isAPIError } from "better-auth/api";
 
 export async function signUpAction(
   formOutput: Partial<SignUpFormOutput>,
-): Promise<ActionResponse> {
+): Promise<ApiResponse<string>> {
   const validation = await SignUpServerSchema.safeParseAsync(formOutput);
 
   if (!validation.success) {
@@ -26,7 +26,7 @@ export async function signUpAction(
         username: data.username,
       },
     });
-    return { success_message: "User was added" };
+    return { data: "User was added" };
   } catch (err) {
     if (isAPIError(err)) {
       return { error: err.message };

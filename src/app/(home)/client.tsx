@@ -1,7 +1,7 @@
 "use client";
 
 import { SignInDialog } from "@/components/auth/sign-in-dialog";
-import { CommentsDialog } from "@/components/post/comments-dialog";
+import { CommentsDialog } from "@/components/post/comment-dialog";
 import { Post } from "@/components/post/post";
 import { PostWithInfo } from "@/types/post";
 import { useState } from "react";

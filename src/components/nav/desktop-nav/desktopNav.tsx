@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { NavbarProps } from "./navbar";
+import { NavbarProps } from "../navbar";
 import {
   Bell,
   CircleUserRound,

@@ -2,17 +2,14 @@
 
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import {
-  PostCreateInput,
-  PostCreateWithoutUserInput,
-} from "@/prisma/generated/models";
-import { ActionResponse } from "@/types/action";
+import { PostCreateWithoutUserInput } from "@/prisma/generated/models";
+import { ApiResponse } from "@/types/api/response";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { headers } from "next/headers";
 
 export async function createPost(
   data: PostCreateWithoutUserInput,
-): Promise<ActionResponse> {
+): Promise<ApiResponse<string>> {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -29,7 +26,7 @@ export async function createPost(
         userId: session.user.id,
       },
     });
-    return { success_message: "post was created" };
+    return { data: "post was created" };
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError) {
       return { error: error.message };

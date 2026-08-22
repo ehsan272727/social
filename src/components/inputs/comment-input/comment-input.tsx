@@ -3,12 +3,12 @@
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { FaceGrinning, SendHorizonal } from "lucide-react";
-import { SubmitEvent, use, useState, useTransition } from "react";
-import { Spinner } from "../ui/spinner";
+import { SubmitEvent, useState, useTransition } from "react";
+import { Spinner } from "@/components/ui/spinner";
 import { createCommentAction } from "@/app/(actions)/post/comment";
 import { toast } from "@/components/ui/toast";
 import { ERROR_MESSAGES } from "@/util/error-messages";
-import { EmojiPickerPopover } from "./emoji-picker-popover";
+import { EmojiPickerPopover } from "@/components/inputs";
 import { useQueryClient } from "@tanstack/react-query";
 import { ApiResponse } from "@/types/api/response";
 import { CommentWithInfo } from "@/types/comment";

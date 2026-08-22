@@ -6,7 +6,7 @@ import { MessageCircle, ThumbsUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { LikeAction } from "@/app/(actions)/post/like";
-import { toast } from "../ui/toast";
+import { toast } from "@/components/ui/toast";
 import { authClient } from "@/lib/auth-client";
 
 interface Props {

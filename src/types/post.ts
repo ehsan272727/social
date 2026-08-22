@@ -12,13 +12,21 @@ export type PostWithInfo = Prisma.PostGetPayload<{
         likes: true;
       };
     };
-    likes: {
-      where: {
-        userId: session.user.id;
-      };
-      select: {
-        userId: true;
-      };
-    };
+    likes:
+      | {
+          where: {
+            userId: string;
+          };
+          take: 1;
+          select: {
+            userId: true;
+          };
+        }
+      | {
+          take: 0;
+          select: {
+            id: true;
+          };
+        };
   };
 }>;

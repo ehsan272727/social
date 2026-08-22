@@ -1,7 +1,7 @@
 "use client";
 
 import { FormInput } from "@/components/inputs";
-import { TextareaInput } from "@/components/inputs/text-area-input";
+import { TextareaInput } from "@/components/inputs/text-area-input/text-area-input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { zodResolver } from "@hookform/resolvers/zod";

@@ -7,7 +7,7 @@ import { SubmitEvent, useState, useTransition } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "@/components/ui/toast";
 import { ERROR_MESSAGES } from "@/util/error-messages";
-import { EmojiPickerPopover } from "./emoji-picker-popover";
+import { EmojiPickerPopover } from "../emoji-picker-popover/emoji-picker-popover";
 import { CommentWithInfo } from "@/types/comment";
 import clsx from "clsx";
 import { createReplyAction } from "@/app/(actions)/post/reply";
