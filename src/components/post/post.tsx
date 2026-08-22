@@ -65,7 +65,7 @@ export function Post({ post, selectPostId, openSignInDialog }: Props) {
   return (
     <>
       <div className="flex flex-col gap-2 rounded-md border">
-        <div className="flex items-center p-2 border-b">
+        <div className="flex items-center gap-2 p-2 border-b">
           <div className="w-fit border rounded-full">
             <a href={userProfileLink}>
               <span className="w-7 h-7 sm:w-8 s:h-8 rounded-full">
@@ -81,7 +81,7 @@ export function Post({ post, selectPostId, openSignInDialog }: Props) {
               </span>
             </a>
           </div>
-          <div className="p-2">{post.user.username}</div>
+          <a href={userProfileLink}>{post.user.username}</a>
         </div>
         <h2 className="p-2 font-bold">{post.title}</h2>
         {post.content && <p className="p-2">{post.content}</p>}
