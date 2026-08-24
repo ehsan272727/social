@@ -11,6 +11,7 @@ import { CommentWithInfo } from "@/types/comment";
 import { Comment } from "@/components/post/comment";
 import { deleteCommentAction } from "@/app/(actions)/post/comment";
 import { api } from "@/lib/axios-instance";
+import { motion, AnimatePresence } from "motion/react";
 
 interface Props {
   postId: string | null;
@@ -81,22 +82,30 @@ export function CommentsDialog({ postId, isOpen, handleOpenChange }: Props) {
           <CommentInput postId={postId} />
         </div>
         <div className="p-2 overflow-y-auto">
-          {comments?.data && !isFetching && (
-            <div className="mt-2 flex flex-col gap-5">
-              {comments.data.map((comment) => (
-                <Comment
-                  key={comment.id}
-                  data={comment}
-                  handleDeleteComment={(commentId) =>
-                    deleteCommentMutate(commentId)
-                  }
-                  isDeletingComment={
-                    isDeletingComment && variables === comment.id
-                  }
-                />
-              ))}
-            </div>
-          )}
+          <AnimatePresence>
+            {comments?.data && !isFetching && (
+              <motion.div
+                className="mt-2 flex flex-col gap-5"
+                transition={{ layout: { delay: 0.1 } }}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+              >
+                {comments.data.map((comment) => (
+                  <Comment
+                    key={comment.id}
+                    data={comment}
+                    handleDeleteComment={(commentId) =>
+                      deleteCommentMutate(commentId)
+                    }
+                    isDeletingComment={
+                      isDeletingComment && variables === comment.id
+                    }
+                  />
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
           {isFetching && (
             <div className="mt-3">
               <CommentsListSkeleton />

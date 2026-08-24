@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function CommentSkeleton() {
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-4 mt-1">
       <Skeleton className="size-10 shrink-0 rounded-full" />
       <div className="flex-1 flex flex-col gap-2">
         <Skeleton className="h-4 w-20" />
@@ -12,10 +12,10 @@ export function CommentSkeleton() {
   );
 }
 
-export function CommentsListSkeleton() {
+export function CommentsListSkeleton({ count = 5 }: { count?: number }) {
   return (
     <div className="flex flex-col gap-5">
-      {Array.from({ length: 5 }).map((_, index) => {
+      {Array.from({ length: count }).map((_, index) => {
         return <CommentSkeleton key={index} />;
       })}
     </div>

@@ -5,13 +5,17 @@ import { useEffect, useMemo, useState } from "react";
 import { ReplyInput } from "@/components/inputs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiResponse } from "@/types/api/response";
-import { CommentSkeleton } from "@/components/skeleton-ui/comment-skeleton";
+import {
+  CommentSkeleton,
+  CommentsListSkeleton,
+} from "@/components/skeleton-ui/comment-skeleton";
 import { CommentMenu } from "@/components/post/comment-menu";
 import { authClient } from "@/lib/auth-client";
 import { deleteCommentAction } from "@/app/(actions)/post/comment";
 import { api } from "@/lib/axios-instance";
 import { getRelativeTime } from "@/lib/time";
 import Link from "next/link";
+import { motion, AnimatePresence } from "motion/react";
 
 interface Props {
   isReply?: boolean;
@@ -102,6 +106,7 @@ export function Comment({
   return (
     <div className="pb-2">
       <div id={`comment-${data.id}`} className="mt-2 flex gap-2 rounded-md">
+        {/* User profile image */}
         <div className="h-fit">
           <div className="border rounded-full">
             <a href={userPageLink}>
@@ -119,6 +124,7 @@ export function Comment({
             </a>
           </div>
         </div>
+        {/* User info */}
         <div className="flex flex-col">
           <div className="flex items-center gap-1 font-bold text-gray-500">
             {/* ----- Show which user the comment is repling to in level 2 upwards comments */}
@@ -190,20 +196,32 @@ export function Comment({
         )}
       </div>
       {/* ---------- Replies ---------- */}
+
       <div className={!data.parentId ? "ml-9" : ""}>
-        {showReplies &&
-          replies?.data &&
-          !isFetching &&
-          replies.data.map((reply) => (
-            <Comment
-              key={reply.id}
-              data={reply}
-              isReply={true}
-              handleDeleteReply={() => deleteReplyMutate(reply.id)}
-            />
-          ))}
-        {showReplies && isFetching && <CommentSkeleton />}
+        <AnimatePresence>
+          {showReplies && replies?.data && !isFetching && (
+            <motion.div
+              transition={{ layout: { delay: 0.1 } }}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
+              {replies.data.map((reply) => (
+                <Comment
+                  key={reply.id}
+                  data={reply}
+                  isReply={true}
+                  handleDeleteReply={() => deleteReplyMutate(reply.id)}
+                />
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+        {showReplies && isFetching && (
+          <CommentsListSkeleton count={repliesCount} />
+        )}
       </div>
+
       {/* ---------- Open reply input on reply button click ------- */}
       {isReplyOpen && (
         <div className="mt-3">
