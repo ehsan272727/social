@@ -81,6 +81,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --highlight-color: #c9e7ff;
 }
 
 .dark {
@@ -136,4 +137,18 @@ body {
 button {
   cursor: pointer;
   user-select: none;
+}
+
+.highlight-comment {
+  animation: comment-highlight 1.5s ease;
+}
+
+@keyframes comment-highlight {
+  0%,
+  70% {
+    background-color: var(--highlight-color);
+  }
+  100% {
+    background-color: transparent;
+  }
 }

@@ -11,6 +11,7 @@ import { authClient } from "@/lib/auth-client";
 import { deleteCommentAction } from "@/app/(actions)/post/comment";
 import { api } from "@/lib/axios-instance";
 import { getRelativeTime } from "@/lib/time";
+import Link from "next/link";
 
 interface Props {
   isReply?: boolean;
@@ -77,13 +78,30 @@ export function Comment({
     setShowReplies((prev) => !prev);
   }
 
+  function scrollToComment(commentId: string) {
+    const commentEl = document.getElementById(`comment-${commentId}`);
+
+    if (!commentEl) return;
+
+    commentEl.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+
+    commentEl.classList.add("highlight-comment");
+
+    setTimeout(() => {
+      commentEl.classList.remove("highlight-comment");
+    }, 500);
+  }
+
   useEffect(() => {
     queryClient.invalidateQueries({ queryKey: ["replies", data.id] });
   }, [showReplies]);
 
   return (
-    <div key={data.id} className="pb-2">
-      <div className="mt-2 flex gap-2">
+    <div className="pb-2">
+      <div id={`comment-${data.id}`} className="mt-2 flex gap-2 rounded-md">
         <div className="h-fit">
           <div className="border rounded-full">
             <a href={userPageLink}>
@@ -102,19 +120,21 @@ export function Comment({
           </div>
         </div>
         <div className="flex flex-col">
-          <a
-            className="flex items-center gap-1 font-bold text-gray-500"
-            href={userPageLink}
-          >
+          <div className="flex items-center gap-1 font-bold text-gray-500">
             {/* ----- Show which user the comment is repling to in level 2 upwards comments */}
-            <div aria-label="username">{data.user.displayUsername}</div>
+            <Link aria-label="username" href={userPageLink}>
+              {data.user.displayUsername}
+            </Link>
             {data.parent && data.parent?.parent && (
-              <>
+              <button
+                onClick={() => scrollToComment(data.parentId!)}
+                className="flex items-center gap-1"
+              >
                 <Play className="size-3 fill-primary" />
                 {data.parent.user.displayUsername}
-              </>
+              </button>
             )}
-          </a>
+          </div>
           <p aria-label="comment content" className="mt-1 text-base">
             {data.content}
           </p>
