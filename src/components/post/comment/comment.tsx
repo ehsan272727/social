@@ -5,10 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ReplyInput } from "@/components/inputs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiResponse } from "@/types/api/response";
-import {
-  CommentSkeleton,
-  CommentsListSkeleton,
-} from "@/components/skeleton-ui/comment-skeleton";
+import { CommentsListSkeleton } from "@/components/skeleton-ui/comment-skeleton";
 import { CommentMenu } from "@/components/post/comment-menu";
 import { authClient } from "@/lib/auth-client";
 import { deleteCommentAction } from "@/app/(actions)/post/comment";
