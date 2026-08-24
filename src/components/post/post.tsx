@@ -10,6 +10,7 @@ import { toast } from "@/components/ui/toast";
 import { authClient } from "@/lib/auth-client";
 import Image from "next/image";
 import { getProfileLink } from "@/lib/get-profile-link";
+import { getRelativeTime } from "@/lib/time";
 
 interface Props {
   post: PostWithInfo;
@@ -85,29 +86,34 @@ export function Post({ post, selectPostId, openSignInDialog }: Props) {
         </div>
         <h2 className="p-2 font-bold">{post.title}</h2>
         {post.content && <p className="p-2">{post.content}</p>}
-        <div className="flex gap-2 items-center p-2 border-t">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleLikeToggle}
-            className="w-max px-1 gap-1"
-          >
-            {likeState.count > 0 && <span>{formattedLikes}</span>}
-            <ThumbsUp
-              className={clsx(
-                "size-5 md:size-6",
-                likeState.isLiked && "text-green-900 fill-gray-300",
-              )}
-            />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => selectPostId(post.id)}
-            className="w-max px-1 gap-1"
-          >
-            {<MessageCircle className="size-5 md:size-6" />}
-          </Button>
+        <div className="flex flex-col gap-2 p-2 border-t">
+          <p className="text-xs md:text-sm">
+            Posted {getRelativeTime(post.createdAt)}
+          </p>
+          <div className="flex gap-2 items-center">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleLikeToggle}
+              className="w-max px-1 gap-1"
+            >
+              {likeState.count > 0 && <span>{formattedLikes}</span>}
+              <ThumbsUp
+                className={clsx(
+                  "size-5 md:size-6",
+                  likeState.isLiked && "text-green-900 fill-gray-300",
+                )}
+              />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => selectPostId(post.id)}
+              className="w-max px-1 gap-1"
+            >
+              {<MessageCircle className="size-5 md:size-6" />}
+            </Button>
+          </div>
         </div>
       </div>
     </>
