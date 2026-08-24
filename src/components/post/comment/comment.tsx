@@ -10,6 +10,7 @@ import { CommentMenu } from "@/components/post/comment-menu";
 import { authClient } from "@/lib/auth-client";
 import { deleteCommentAction } from "@/app/(actions)/post/comment";
 import { api } from "@/lib/axios-instance";
+import { getRelativeTime } from "@/lib/time";
 
 interface Props {
   isReply?: boolean;
@@ -104,10 +105,9 @@ export function Comment({
           <a
             className="flex items-center gap-1 font-bold text-gray-500"
             href={userPageLink}
-            aria-label="username"
           >
             {/* ----- Show which user the comment is repling to in level 2 upwards comments */}
-            {data.user.displayUsername}
+            <div aria-label="username">{data.user.displayUsername}</div>
             {data.parent && data.parent?.parent && (
               <>
                 <Play className="size-3 fill-primary" />
@@ -115,7 +115,17 @@ export function Comment({
               </>
             )}
           </a>
-          <p>{data.content}</p>
+          <p aria-label="comment content" className="mt-1 text-base">
+            {data.content}
+          </p>
+          {/* ---- How long ago was the comment sent ---- */}
+          <p
+            aria-label="when was the comment sent"
+            className="mt-1.5 text-xs md:text-sm opacity-60"
+          >
+            {getRelativeTime(data.createdAt)}
+          </p>
+
           {/* ---- Reply button for opening the reply input ---- */}
           <button
             onClick={() => {
