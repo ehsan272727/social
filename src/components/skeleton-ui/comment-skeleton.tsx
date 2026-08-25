@@ -12,7 +12,7 @@ export function CommentSkeleton() {
   );
 }
 
-export function CommentsListSkeleton({ count = 5 }: { count?: number }) {
+export function CommentsListSkeleton({ count = 1 }: { count?: number }) {
   return (
     <div className="flex flex-col gap-5">
       {Array.from({ length: count }).map((_, index) => {

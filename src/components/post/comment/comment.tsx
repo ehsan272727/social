@@ -203,14 +203,23 @@ export function Comment({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
             >
-              {replies.data.map((reply) => (
-                <Comment
-                  key={reply.id}
-                  data={reply}
-                  isReply={true}
-                  handleDeleteReply={() => deleteReplyMutate(reply.id)}
-                />
-              ))}
+              <AnimatePresence>
+                {replies.data.map((reply) => (
+                  <motion.div
+                    key={reply.id}
+                    initial={{ opacity: 0, y: -1 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 5 }}
+                    layout
+                  >
+                    <Comment
+                      data={reply}
+                      isReply={true}
+                      handleDeleteReply={() => deleteReplyMutate(reply.id)}
+                    />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </motion.div>
           )}
         </AnimatePresence>
