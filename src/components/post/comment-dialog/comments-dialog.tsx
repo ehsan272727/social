@@ -91,24 +91,33 @@ export function CommentsDialog({ postId, isOpen, handleOpenChange }: Props) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
               >
-                {comments.data.map((comment) => (
-                  <Comment
-                    key={comment.id}
-                    data={comment}
-                    handleDeleteComment={(commentId) =>
-                      deleteCommentMutate(commentId)
-                    }
-                    isDeletingComment={
-                      isDeletingComment && variables === comment.id
-                    }
-                  />
-                ))}
+                <AnimatePresence>
+                  {comments.data.map((comment) => (
+                    <motion.div
+                      key={comment.id}
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 5 }}
+                      layout
+                    >
+                      <Comment
+                        data={comment}
+                        handleDeleteComment={(commentId) =>
+                          deleteCommentMutate(commentId)
+                        }
+                        isDeletingComment={
+                          isDeletingComment && variables === comment.id
+                        }
+                      />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
               </motion.div>
             )}
           </AnimatePresence>
           {isFetching && (
-            <div className="mt-3">
-              <CommentsListSkeleton />
+            <div className="mb-3">
+              <CommentsListSkeleton count={1} />
             </div>
           )}
         </div>
