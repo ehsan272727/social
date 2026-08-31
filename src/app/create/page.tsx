@@ -59,9 +59,17 @@ export default function Create() {
         toast.add({ type: "error", description: postId.error });
         return;
       }
+      const filesArr = [...files];
       const uploadArr = await Promise.all(
-        files.map(async (fileInfo) => {
+        filesArr.map(async (fileInfo) => {
           const key = await uploadFile(fileInfo.file);
+          setFiles((prev) =>
+            prev.map((file) =>
+              file.objectUrl === fileInfo.objectUrl
+                ? { ...file, uploading: true }
+                : file,
+            ),
+          );
 
           if (!key) throw new Error();
 

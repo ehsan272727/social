@@ -10,12 +10,6 @@ const cors = {
         AllowedHeaders: ["*"],
         AllowedMethods: ["GET", "PUT", "POST", "DELETE", "HEAD"], // Added HEAD & DELETE
         AllowedOrigins: ["http://localhost:3000", "http//192.168.1.105:300"],
-        ExposeHeaders: [
-          "ETag",
-          "x-amz-server-side-encryption",
-          "x-amz-request-id",
-          "x-amz-id-2",
-        ],
         MaxAgeSeconds: 3000,
       },
     ],

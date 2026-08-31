@@ -14,7 +14,7 @@ export async function createUploadUrl({
   size,
 }: Props): Promise<string> {
   const putCommand = new PutObjectCommand({
-    Bucket: "social-app",
+    Bucket: process.env.BUCKET_NAME,
     Key: key,
     ContentType: contentType,
     ContentLength: size,

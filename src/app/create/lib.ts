@@ -17,9 +17,13 @@ export async function uploadFile(file: File): Promise<string | undefined> {
     toast.add({ type: "error", description: uploadInfo.error });
     throw new Error("Upload failed");
   } else if (uploadInfo.data) {
-    console.log(uploadInfo.data);
     await axios.put(uploadInfo.data.presignedUrl, file, {
       headers: { "Content-Type": file.type },
+      onUploadProgress(progressEvent) {
+        if (typeof progressEvent.progress === "number") {
+          const progressPercent = (progressEvent.progress * 100).toFixed(2);
+        }
+      },
     });
     return uploadInfo.data.key;
   }

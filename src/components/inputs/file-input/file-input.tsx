@@ -1,7 +1,6 @@
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { FileStat } from "@/types/file";
-import clsx from "clsx";
 import Image from "next/image";
 import {
   ChangeEvent,
@@ -21,7 +20,6 @@ export function FileInput({ files, setFiles }: Props) {
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const inputFiles = Array.from(e.target.files || []);
-    console.log(inputFiles);
     if (inputFiles.length > 0) {
       setFiles(
         inputFiles.map((file) => {
