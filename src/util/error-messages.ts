@@ -12,6 +12,10 @@ export const ERROR_MESSAGES = {
     no_parent_comment_id: "comment id is not present",
   },
 
+  file: {
+    not_valid: "this file type is not valid",
+  },
+
   unknown: {
     server: "an unknown server error happened",
   },

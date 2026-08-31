@@ -2,7 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { ActionResponse } from "@/types/action";
+import { ApiResponse } from "@/types/api/response";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { headers } from "next/headers";
 
@@ -14,7 +14,7 @@ interface Props {
 export async function LikeAction({
   postId,
   isLiked,
-}: Props): Promise<ActionResponse<null>> {
+}: Props): Promise<ApiResponse<null>> {
   const session = await auth.api.getSession({
     headers: await headers(),
   });

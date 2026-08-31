@@ -81,20 +81,29 @@ model Post {
   title     String
   content   String?  
 
-  imageUrl  String?  
-  videoUrl  String?  
 
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
 
   comments  Comment[]
   likes     Like[]
+  media     Media[]
 
   userId    String
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([createdAt])
+}
+
+model Media {
+  id String @id @default(cuid())
+  key String
+  type String
+  mimeType String?
+  postId  String
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
 }
 
 model Comment {

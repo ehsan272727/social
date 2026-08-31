@@ -8,13 +8,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { LogIn, Send } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { createPost } from "./actions";
+import { createMultipleMedia, createPost } from "./actions";
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 import { toast } from "@/components/ui/toast";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
+import { FileInput } from "@/components/inputs/file-input";
+import { FileStat } from "@/types/file";
+import { ApiResponse } from "@/types/api/response";
+import { uploadFile } from "./lib";
+import { deletePost } from "../(actions)/post/post";
 
 const maxTextCharacters = 400;
 
@@ -35,6 +40,7 @@ export default function Create() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
   const [isSending, setIsSending] = useState(false);
+  const [files, setFiles] = useState<FileStat[]>([]);
   const { control, handleSubmit } = useForm({
     resolver: zodResolver(PostFormSchema),
     defaultValues: {
@@ -44,18 +50,39 @@ export default function Create() {
   });
 
   async function onSubmit(data: z.output<typeof PostFormSchema>) {
+    let postId: ApiResponse<string> | null = null;
     try {
       setIsSending(true);
-      const result = await createPost(data);
+      postId = await createPost(data);
 
-      if ("error" in result) {
-        toast.add({ type: "error", description: result.error });
-      } else {
-        toast.add({ type: "success", description: result.success_message });
-        router.push("/");
+      if ("error" in postId) {
+        toast.add({ type: "error", description: postId.error });
+        return;
       }
-    } catch (error) {
-      toast.add({ type: "error", description: "An unknown error(client)" });
+      const uploadArr = await Promise.all(
+        files.map(async (fileInfo) => {
+          const key = await uploadFile(fileInfo.file);
+
+          if (!key) throw new Error();
+
+          const mediaData = {
+            key,
+            type: fileInfo.file.type.split("/")[0],
+            mimeType: fileInfo.file.type,
+            postId: postId!.data!,
+          };
+          return mediaData;
+        }),
+      );
+      await createMultipleMedia(uploadArr);
+      toast.add({ type: "success", description: "Post has been uploaded" });
+      router.push("/");
+    } catch (error: unknown) {
+      toast.add({
+        type: "error",
+        description: "An error happened while uploading post",
+      });
+      await deletePost(postId!.data!);
     } finally {
       setIsSending(false);
     }
@@ -93,6 +120,7 @@ export default function Create() {
               name="content"
               label="Content"
             />
+            <FileInput files={files} setFiles={setFiles} />
             <Button
               type="submit"
               disabled={isSending}
