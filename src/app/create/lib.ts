@@ -21,7 +21,10 @@ export async function uploadFile(
     throw new Error("Upload failed");
   } else if (uploadInfo.data) {
     await axios.put(uploadInfo.data.presignedUrl, fileInfo.file, {
-      headers: { "Content-Type": fileInfo.file.type },
+      headers: {
+        "Content-Type": fileInfo.file.type,
+        "x-amz-acl": "public-read",
+      },
       onUploadProgress(progressEvent) {
         if (typeof progressEvent.progress === "number") {
           const progressPercent = Math.round(
