@@ -62,14 +62,16 @@ export default function Create() {
       const filesArr = [...files];
       const uploadArr = await Promise.all(
         filesArr.map(async (fileInfo) => {
-          const key = await uploadFile(fileInfo.file);
-          setFiles((prev) =>
-            prev.map((file) =>
-              file.objectUrl === fileInfo.objectUrl
-                ? { ...file, uploading: true }
-                : file,
-            ),
-          );
+          const updateProgress = (targetFile: FileStat, progress: number) => {
+            setFiles((prev) =>
+              prev.map((file) =>
+                file.objectUrl === targetFile.objectUrl
+                  ? { ...file, uploading: true, progress }
+                  : file,
+              ),
+            );
+          };
+          const key = await uploadFile(fileInfo, updateProgress);
 
           if (!key) throw new Error();
 

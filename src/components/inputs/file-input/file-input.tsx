@@ -59,7 +59,10 @@ export function FileInput({ files, setFiles }: Props) {
             className="w-40 h-40 relative rounded-md"
           >
             <div
-              className={`h-${100 - fileInfo.progress}% absolute top-0 left-0 w-full bg-gray-200 opacity-50`}
+              className="absolute top-0 left-0 w-full bg-gray-200 opacity-50"
+              style={{
+                height: `${100 - fileInfo.progress}%`,
+              }}
             ></div>
             <Image
               src={fileInfo.objectUrl}
