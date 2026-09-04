@@ -11,6 +11,8 @@ import { authClient } from "@/lib/auth-client";
 import Image from "next/image";
 import { getProfileLink } from "@/lib/get-profile-link";
 import { getRelativeTime } from "@/lib/time";
+import { useQuery } from "@tanstack/react-query";
+import { PostMedia } from "./post-media/post-media";
 
 interface Props {
   post: PostWithInfo;
@@ -86,6 +88,7 @@ export function Post({ post, selectPostId, openSignInDialog }: Props) {
         </div>
         <h2 className="p-2 font-bold">{post.title}</h2>
         {post.content && <p className="p-2">{post.content}</p>}
+        <PostMedia postId={post.id} />
         <div className="flex flex-col gap-2 p-2 border-t">
           <p className="text-xs md:text-sm">
             Posted {getRelativeTime(post.createdAt)}
