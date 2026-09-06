@@ -11,7 +11,6 @@ import { authClient } from "@/lib/auth-client";
 import Image from "next/image";
 import { getProfileLink } from "@/lib/get-profile-link";
 import { getRelativeTime } from "@/lib/time";
-import { useQuery } from "@tanstack/react-query";
 import { PostMedia } from "./post-media/post-media";
 
 interface Props {

@@ -26,7 +26,6 @@ import { PasswordInput } from "@/components/inputs/password-input/password-input
 import { signUpAction } from "./actions";
 import { useState, useTransition } from "react";
 import { toast } from "@/components/ui/toast";
-import { ActionResponse } from "@/types/action";
 import { useRouter } from "next/navigation";
 import { Spinner } from "@/components/ui/spinner";
 

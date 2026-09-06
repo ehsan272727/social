@@ -1,6 +1,6 @@
 "use client";
 
-import { GoogleIcon } from "@/icons/google";
+import { GoogleIcon } from "@/assests/icons/google";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "../ui/toast";
