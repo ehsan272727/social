@@ -72,7 +72,7 @@ export function CommentsDialog({ postId, isOpen, handleOpenChange }: Props) {
       open={isOpen}
       onOpenChange={handleOpenChange}
       showSwipeHandle={isMobile}
-      swipeDirection={isMobile ? "down" : "right"}
+      swipeDirection={isMobile ? "up" : "right"}
     >
       <DrawerContent>
         <DrawerHeader className="pb-1 font-bold text-lg border-b">
