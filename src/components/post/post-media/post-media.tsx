@@ -1,9 +1,18 @@
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { toast } from "@/components/ui/toast";
 import { api } from "@/lib/axios-instance";
 import { Media } from "@/prisma/generated/client";
 import { ApiResponse } from "@/types/api/response";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
+
+import blurPlaceholder from "@/assests/images/placeholders/image-blur.png";
 
 interface Props {
   postId: string;
@@ -37,26 +46,34 @@ export function PostMedia({ postId }: Props) {
   return (
     <div>
       {media && (
-        <div>
-          {media.map((file) => {
-            const srcUrl = `${bucketUrl}/${file.key}`;
-            return (
-              <div key={file.id} className="relative w-24 h-24 rounded-md">
-                {file.type === "image" ? (
-                  <Image
-                    src={srcUrl}
-                    alt=""
-                    fill={true}
-                    className="rounded-md"
-                  />
-                ) : (
-                  <video controls={true}>
-                    <source src={srcUrl}></source>
-                  </video>
-                )}
-              </div>
-            );
-          })}
+        <div className="p-2">
+          <Carousel>
+            <CarouselContent>
+              {media.map((file) => {
+                const srcUrl = `${bucketUrl}/${file.key}`;
+                return (
+                  <CarouselItem key={file.id}>
+                    <div className="relative w-24 h-24 rounded-md">
+                      {file.type === "image" ? (
+                        <Image
+                          src={srcUrl}
+                          alt=""
+                          fill={true}
+                          blurDataURL={blurPlaceholder.src}
+                          placeholder="blur"
+                          className="rounded-md"
+                        />
+                      ) : (
+                        <video controls={true}>
+                          <source src={srcUrl}></source>
+                        </video>
+                      )}
+                    </div>
+                  </CarouselItem>
+                );
+              })}
+            </CarouselContent>
+          </Carousel>
         </div>
       )}
     </div>
