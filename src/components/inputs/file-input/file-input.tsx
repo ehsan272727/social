@@ -1,6 +1,8 @@
+import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { FileStat } from "@/types/file";
+import { X } from "lucide-react";
 import Image from "next/image";
 import {
   ChangeEvent,
@@ -39,6 +41,12 @@ export function FileInput({ files, setFiles }: Props) {
     }
   };
 
+  const handleRemoveFile = (targetFile: FileStat) => {
+    setFiles((prev) =>
+      prev.filter((file) => file.objectUrl !== targetFile.objectUrl),
+    );
+  };
+
   return (
     <div className="flex flex-col gap-2">
       <Field>
@@ -47,32 +55,56 @@ export function FileInput({ files, setFiles }: Props) {
           id="picture"
           ref={inputRef}
           type="file"
-          accept="image/jpg, image/png, image/webp, image/svg video/*"
+          accept="image/jpg, image/png, image/webp, image/svg, video/*"
           multiple={true}
           onChange={handleFileChange}
         />
       </Field>
-      {files.length > 0 &&
-        files.map((fileInfo) => (
-          <div
-            key={fileInfo.file.name}
-            className="w-40 h-40 relative rounded-md"
-          >
-            <div
-              className="absolute top-0 left-0 w-full bg-gray-200 opacity-50"
-              style={{
-                height: `${100 - fileInfo.progress}%`,
-              }}
-            ></div>
-            <Image
-              src={fileInfo.objectUrl}
-              alt="preview of the selected media"
-              width={160}
-              height={160}
-              className="w-full h-full object-contain rounded-md"
-            />
-          </div>
-        ))}
+      <div className="grid grid-cols-2">
+        {files.length > 0 &&
+          files.map((fileInfo) => {
+            const fileType = fileInfo.file.type.split("/")[0] as
+              | "image"
+              | "video";
+            return (
+              <div key={fileInfo.file.name} className="w-fit flex gap-2">
+                <div>
+                  <Button
+                    size="icon-sm"
+                    variant="destructive"
+                    onClick={() => handleRemoveFile(fileInfo)}
+                  >
+                    <X className="size-4 md:size-5" />
+                  </Button>
+                </div>
+                <div className="w-40 h-40 relative rounded-md">
+                  <div
+                    className="top-0 left-0 w-full bg-gray-200 opacity-50"
+                    style={{
+                      display: fileInfo.uploading ? "absolute" : "none",
+                      height: `${100 - fileInfo.progress}%`,
+                    }}
+                  ></div>
+                  {fileType === "image" ? (
+                    <Image
+                      src={fileInfo.objectUrl}
+                      alt="preview of the selected media"
+                      width={160}
+                      height={160}
+                      className="w-full h-full bg-gray-100 object-contain rounded-md"
+                    />
+                  ) : (
+                    <video
+                      src={fileInfo.objectUrl}
+                      controls
+                      className="w-full h-full  object-contain rounded-md"
+                    />
+                  )}
+                </div>
+              </div>
+            );
+          })}
+      </div>
     </div>
   );
 }
