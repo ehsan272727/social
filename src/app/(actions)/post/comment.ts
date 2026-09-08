@@ -125,3 +125,63 @@ export async function deleteCommentAction({
     return { error: ERROR_MESSAGES.unknown.server };
   }
 }
+
+// ============================================================
+
+interface EditProps {
+  commentId: string;
+  newContent: string;
+}
+
+export async function editCommentAction({
+  commentId,
+  newContent,
+}: EditProps): Promise<ApiResponse<string>> {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return { error: ERROR_MESSAGES.auth.not_logged_in };
+  }
+
+  if (typeof commentId !== "string" || commentId.length === 0) {
+    return {
+      error: ERROR_MESSAGES.comment.empty_id,
+    };
+  }
+
+  if (typeof newContent !== "string") {
+    return {
+      error: ERROR_MESSAGES.comment.empty,
+    };
+  }
+
+  try {
+    if (newContent.length === 0) {
+      return await deleteCommentAction({ commentId });
+    }
+
+    const editedComment = await prisma.comment.updateMany({
+      where: {
+        id: commentId,
+        userId: session.user.id,
+      },
+      data: {
+        content: newContent,
+      },
+    });
+    if (editedComment.count === 0) {
+      return {
+        error: `${ERROR_MESSAGES.comment.not_found} or ${ERROR_MESSAGES.auth.not_authorized}`,
+      };
+    }
+
+    return { data: commentId };
+  } catch (error) {
+    if (error instanceof PrismaClientKnownRequestError) {
+      return { error: error.message };
+    }
+    return { error: ERROR_MESSAGES.unknown.server };
+  }
+}

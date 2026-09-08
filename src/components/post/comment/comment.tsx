@@ -8,11 +8,15 @@ import { ApiResponse } from "@/types/api/response";
 import { CommentsListSkeleton } from "@/components/skeleton-ui/comment-skeleton";
 import { CommentMenu } from "@/components/post/comment-menu";
 import { authClient } from "@/lib/auth-client";
-import { deleteCommentAction } from "@/app/(actions)/post/comment";
+import {
+  deleteCommentAction,
+  editCommentAction,
+} from "@/app/(actions)/post/comment";
 import { api } from "@/lib/axios-instance";
 import { getRelativeTime } from "@/lib/time";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
+import { CommentEditable } from "@/components/inputs/comment-editable/comment-editable";
 
 interface Props {
   isReply?: boolean;
@@ -39,9 +43,13 @@ export function Comment({
   const userPageLink = data ? `/profile/${data.user.username}` : "#";
   const [isReplyOpen, setIsReplyOpen] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const { data: session } = authClient.useSession();
 
   const queryClient = useQueryClient();
+  const EditQueryKey = isReply
+    ? ["replies", data.id!]
+    : ["comments", data.postId!];
 
   const { data: replies, isFetching } = useQuery<
     ApiResponse<CommentWithInfo[]>
@@ -74,6 +82,18 @@ export function Comment({
       },
     },
   );
+
+  const { isPending: isEditPending, mutate: editMutate } = useMutation({
+    mutationFn: ({
+      commentId,
+      newContent,
+    }: {
+      commentId: string;
+      newContent: string;
+    }) => editCommentAction({ commentId, newContent }),
+    mutationKey: ["edit", data.id],
+    onSettled: () => queryClient.invalidateQueries({ queryKey: EditQueryKey }),
+  });
 
   function handleReplyToggle() {
     setShowReplies((prev) => !prev);
@@ -138,9 +158,21 @@ export function Comment({
               </button>
             )}
           </div>
-          <p aria-label="comment content" className="mt-1 text-base">
-            {data.content}
-          </p>
+          <div aria-label="comment content" className="mt-1 text-base">
+            {session && session.user.id === data.userId ? (
+              <CommentEditable
+                isEditing={isEditing}
+                setIsEditing={setIsEditing}
+                editQueryKey={EditQueryKey}
+                content={data.content}
+                handleEdit={(newContent: string) =>
+                  editMutate({ commentId: data.id, newContent })
+                }
+              />
+            ) : (
+              data.content
+            )}
+          </div>
           {/* ---- How long ago was the comment sent ---- */}
           <p
             aria-label="when was the comment sent"
@@ -183,6 +215,7 @@ export function Comment({
         {/* Show comment menu if the comment belongs to the logged in user */}
         {session && session.user.id === data.userId && (
           <CommentMenu
+            openEdit={() => setIsEditing(true)}
             handleDeleteComment={
               isReply
                 ? () => deleteReplyMutate(data.id)

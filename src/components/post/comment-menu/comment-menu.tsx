@@ -10,10 +10,15 @@ import {
 
 interface Props {
   isDeleting: boolean;
+  openEdit: () => void;
   handleDeleteComment: () => void;
 }
 
-export function CommentMenu({ isDeleting, handleDeleteComment }: Props) {
+export function CommentMenu({
+  openEdit,
+  isDeleting,
+  handleDeleteComment,
+}: Props) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -25,7 +30,7 @@ export function CommentMenu({ isDeleting, handleDeleteComment }: Props) {
       />
       <DropdownMenuContent>
         <DropdownMenuGroup>
-          <DropdownMenuItem>Edit</DropdownMenuItem>
+          <DropdownMenuItem onClick={openEdit}>Edit</DropdownMenuItem>
           <DropdownMenuItem disabled={isDeleting} onClick={handleDeleteComment}>
             Delete
           </DropdownMenuItem>
