@@ -47,9 +47,10 @@ export function Comment({
   const { data: session } = authClient.useSession();
 
   const queryClient = useQueryClient();
-  const EditQueryKey = isReply
-    ? ["replies", data.id!]
+  const queryKey = isReply
+    ? ["replies", data.parentId!]
     : ["comments", data.postId!];
+  const editMutationKey = ["edit", data.id];
 
   const { data: replies, isFetching } = useQuery<
     ApiResponse<CommentWithInfo[]>
@@ -69,7 +70,7 @@ export function Comment({
 
       onSuccess: (response) => {
         queryClient.setQueryData<ApiResponse<CommentWithInfo[]>>(
-          ["replies", data.parentId],
+          queryKey,
 
           (prev) => {
             if (!prev?.data) return { data: [] };
@@ -84,15 +85,43 @@ export function Comment({
   );
 
   const { isPending: isEditPending, mutate: editMutate } = useMutation({
-    mutationFn: ({
+    mutationFn: async ({
       commentId,
       newContent,
     }: {
       commentId: string;
       newContent: string;
-    }) => editCommentAction({ commentId, newContent }),
-    mutationKey: ["edit", data.id],
-    onSettled: () => queryClient.invalidateQueries({ queryKey: EditQueryKey }),
+    }) => {
+      const result = await editCommentAction({ commentId, newContent });
+
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      return result;
+    },
+    mutationKey: editMutationKey,
+    onSuccess: (_, editedComment) =>
+      queryClient.setQueryData<ApiResponse<CommentWithInfo[]>>(
+        queryKey,
+        (oldComments) => {
+          if (!oldComments?.data) return { data: [] };
+          if (editedComment.newContent.trim().length === 0) {
+            return {
+              data: oldComments.data.filter(
+                (comment) => comment.id !== editedComment.commentId,
+              ),
+            };
+          }
+          return {
+            data: oldComments.data.map((comment) =>
+              comment.id === editedComment.commentId
+                ? { ...comment, content: editedComment.newContent }
+                : comment,
+            ),
+          };
+        },
+      ),
   });
 
   function handleReplyToggle() {
@@ -163,7 +192,7 @@ export function Comment({
               <CommentEditable
                 isEditing={isEditing}
                 setIsEditing={setIsEditing}
-                editQueryKey={EditQueryKey}
+                editQueryKey={editMutationKey}
                 content={data.content}
                 handleEdit={(newContent: string) =>
                   editMutate({ commentId: data.id, newContent })

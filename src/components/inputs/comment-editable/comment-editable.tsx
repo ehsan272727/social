@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useMutationState } from "@tanstack/react-query";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 
 interface Props {
   isEditing: boolean;
@@ -22,33 +22,36 @@ export function CommentEditable({
   editQueryKey,
   handleEdit,
 }: Props) {
-  const [newContent, setNewContent] = useState("");
   const pendingEdit = useMutationState<EditVariables>({
     filters: { mutationKey: editQueryKey, status: "pending" },
     select: (mutation) => mutation.state.variables as EditVariables,
   });
 
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const currContent =
+    pendingEdit.length > 0 ? pendingEdit[0].newContent : content;
+
   const handleCancel = () => setIsEditing(false);
 
   const handleSave = () => {
-    handleEdit(newContent);
+    handleEdit(inputRef.current ? inputRef.current.value : "");
     setIsEditing(false);
   };
 
   return (
     <div>
       {!isEditing ? (
-        <p>{pendingEdit.length > 0 ? pendingEdit[0].newContent : content}</p>
+        <p>{currContent}</p>
       ) : (
         <div className="flex flex-col gap-1.5">
           <textarea
-            onChange={(e) => setNewContent(e.target.value)}
-            value={newContent}
+            ref={inputRef}
+            defaultValue={currContent}
             className="resize-none h-auto rounded-md px-1.5 py-0.5 outline outline-primary "
           />
           <div className="flex gap-1.5 items-center">
             <Button onClick={handleSave}>Save</Button>
-            <Button variant="destructive" onClick={handleCancel}>
+            <Button variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
           </div>
