@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Navbar } from "@/components/nav";
 import { Toaster } from "@/components/ui/toast";
 import Providers from "./providers";
+import { GlobalAlert } from "@/components/alerts/global-alert";
 
 const notoSans = Noto_Sans({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -41,13 +42,14 @@ export default function RootLayout({
       )}
     >
       <body className="container mx-auto">
-        <div className="flex">
-          <Navbar />
-          <div className="flex-1 p-7 pb-16">
-            <Providers>{children}</Providers>
+        <Providers>
+          <GlobalAlert />
+          <div className="flex">
+            <Navbar />
+            <div className="flex-1 p-7 pb-16">{children}</div>
           </div>
-        </div>
-        <Toaster />
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );

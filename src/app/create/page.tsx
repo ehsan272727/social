@@ -19,7 +19,7 @@ import { FileInput } from "@/components/inputs/file-input";
 import { FileStat } from "@/types/file";
 import { ApiResponse } from "@/types/api/response";
 import { uploadFile } from "./lib";
-import { deletePost } from "../(actions)/post/post";
+import { deletePostAction } from "../(actions)/post/post-actions";
 
 const maxTextCharacters = 400;
 
@@ -92,7 +92,7 @@ export default function Create() {
         type: "error",
         description: "An error happened while uploading post",
       });
-      await deletePost(postId!.data!);
+      await deletePostAction(postId!.data!);
     } finally {
       setIsSending(false);
     }

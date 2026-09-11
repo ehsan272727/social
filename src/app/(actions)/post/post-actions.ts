@@ -5,9 +5,13 @@ import prisma from "@/lib/prisma";
 import { ApiResponse } from "@/types/api/response";
 import { ERROR_MESSAGES } from "@/util/error-messages";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
+import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
-export async function deletePost(postId: string): Promise<ApiResponse<string>> {
+export async function deletePostAction(
+  postId: string,
+  revalidationPath?: string,
+): Promise<ApiResponse<string>> {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -20,8 +24,12 @@ export async function deletePost(postId: string): Promise<ApiResponse<string>> {
     const deletedPost = await prisma.post.deleteMany({
       where: { id: postId, userId: session.user.id },
     });
+    if (revalidationPath) {
+      revalidatePath(revalidationPath);
+    }
     return {
-      data: deletedPost.count > 0 ? "post was deleted" : "no post was deleted",
+      data:
+        deletedPost.count > 0 ? "post was deleted" : "post is already deleted",
     };
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError) {

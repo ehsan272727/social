@@ -12,11 +12,13 @@ import Image from "next/image";
 import { getProfileLink } from "@/lib/get-profile-link";
 import { getRelativeTime } from "@/lib/time";
 import { PostMedia } from "./post-media/post-media";
+import { PostMenu } from "./post-menu";
 
 interface Props {
   post: PostWithInfo;
   selectPostId: (postId: string) => void;
   openSignInDialog: () => void;
+  handleDelete: () => void;
 }
 
 function formatLikes(likes: number) {
@@ -29,7 +31,12 @@ function formatLikes(likes: number) {
   }
 }
 
-export function Post({ post, selectPostId, openSignInDialog }: Props) {
+export function Post({
+  post,
+  selectPostId,
+  openSignInDialog,
+  handleDelete,
+}: Props) {
   const { data: session } = authClient.useSession();
   const [likeState, setLikeState] = useState({
     isLiked: post.likes?.length > 0,
@@ -65,25 +72,31 @@ export function Post({ post, selectPostId, openSignInDialog }: Props) {
   };
 
   return (
-    <>
+    <div>
       <div className="flex flex-col gap-2 rounded-md border">
-        <div className="flex items-center gap-2 p-2 border-b">
-          <div className="w-fit border rounded-full">
-            <a href={userProfileLink}>
-              <span className="w-7 h-7 sm:w-8 s:h-8 rounded-full">
-                {post.user.image ? (
-                  <Image
-                    src={post.user.image}
-                    alt="profile image is not available"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <User className="size-7 sm:size-8 opacity-50" />
-                )}
-              </span>
-            </a>
+        <div className="flex justify-between items-center p-2 border-b">
+          <div className="flex items-center gap-2">
+            <div className="w-fit border rounded-full">
+              <a href={userProfileLink}>
+                <span className="w-7 h-7 sm:w-8 s:h-8 rounded-full">
+                  {post.user.image ? (
+                    <Image
+                      src={post.user.image}
+                      alt="profile image is not available"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <User className="size-7 sm:size-8 opacity-50" />
+                  )}
+                </span>
+              </a>
+            </div>
+            <a href={userProfileLink}>{post.user.username}</a>
           </div>
-          <a href={userProfileLink}>{post.user.username}</a>
+          <PostMenu
+            isOwnPost={session?.user.id === post.userId}
+            deletePost={handleDelete}
+          />
         </div>
         <h2 className="p-2 font-bold">{post.title}</h2>
         {post.content && <p className="p-2">{post.content}</p>}
@@ -118,6 +131,6 @@ export function Post({ post, selectPostId, openSignInDialog }: Props) {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
