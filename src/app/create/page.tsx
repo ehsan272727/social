@@ -20,6 +20,7 @@ import { FileStat } from "@/types/file";
 import { ApiResponse } from "@/types/api/response";
 import { uploadFile } from "./lib";
 import { deletePostAction } from "../(actions)/post/post-actions";
+import { useQueryClient } from "@tanstack/react-query";
 
 const maxTextCharacters = 400;
 
@@ -49,14 +50,16 @@ export default function Create() {
     },
   });
 
+  const queryClient = useQueryClient();
+
   async function onSubmit(data: z.output<typeof PostFormSchema>) {
-    let postId: ApiResponse<string> | null = null;
+    let postId_response: ApiResponse<string> | null = null;
     try {
       setIsSending(true);
-      postId = await createPost(data);
+      postId_response = await createPost(data);
 
-      if ("error" in postId) {
-        toast.add({ type: "error", description: postId.error });
+      if (postId_response.error) {
+        toast.add({ type: "error", description: postId_response.error });
         return;
       }
       const filesArr = [...files];
@@ -79,21 +82,22 @@ export default function Create() {
             key,
             type: fileInfo.file.type.split("/")[0],
             mimeType: fileInfo.file.type,
-            postId: postId!.data!,
+            postId: postId_response!.data!,
           };
           return mediaData;
         }),
       );
       await createMultipleMedia(uploadArr);
       toast.add({ type: "success", description: "Post has been uploaded" });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
       router.push("/");
+      setIsSending(false);
     } catch (error: unknown) {
       toast.add({
         type: "error",
         description: "An error happened while uploading post",
       });
-      await deletePostAction(postId!.data!);
-    } finally {
+      await deletePostAction(postId_response!.data!);
       setIsSending(false);
     }
   }

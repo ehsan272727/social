@@ -1,5 +1,5 @@
 import { toast } from "@/components/ui/toast";
-import { api } from "@/lib/axios-instance";
+import { api } from "@/lib/api/axios-instance";
 import { ApiResponse } from "@/types/api/response";
 import { FileStat, S3ResponseObject } from "@/types/file";
 import axios from "axios";

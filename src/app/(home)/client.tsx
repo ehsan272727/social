@@ -7,22 +7,31 @@ import { PostWithInfo } from "@/types/post";
 import { useState } from "react";
 import { deletePostAction } from "../(actions)/post/post-actions";
 import { toast } from "@/components/ui/toast";
+import { useQuery } from "@tanstack/react-query";
+import { ApiResponse } from "@/types/api/response";
+import { getPosts } from "./getPosts";
 
-interface Props {
-  posts: PostWithInfo[];
-}
+interface Props {}
 
-export function ClientPage({ posts }: Props) {
+export function ClientPage({}: Props) {
   const [isSignInDialogOpen, setSignInDialog] = useState(false);
   const [commentsPostId, setCommentsPostId] = useState<string | null>(null);
   const isCommentsOpen = commentsPostId !== null;
 
+  const { data: posts, refetch: refetchPosts } = useQuery<
+    PostWithInfo[] | undefined
+  >({
+    queryKey: ["posts"],
+    queryFn: getPosts,
+  });
+
   const handleDeletePost = async (postId: string) => {
-    const result = await deletePostAction(postId, "/");
+    const result = await deletePostAction(postId);
 
     if (result.error) {
       toast.add({ type: "error", title: result.error });
     } else {
+      refetchPosts();
       toast.add({ title: result.data });
     }
   };
@@ -30,15 +39,16 @@ export function ClientPage({ posts }: Props) {
   return (
     <>
       <div className="flex flex-col gap-9">
-        {posts.map((post) => (
-          <Post
-            key={post.id}
-            post={post}
-            selectPostId={(postId) => setCommentsPostId(postId)}
-            openSignInDialog={() => setSignInDialog(false)}
-            handleDelete={() => handleDeletePost(post.id)}
-          />
-        ))}
+        {posts &&
+          posts.map((post) => (
+            <Post
+              key={post.id}
+              post={post}
+              selectPostId={(postId) => setCommentsPostId(postId)}
+              openSignInDialog={() => setSignInDialog(false)}
+              handleDelete={() => handleDeletePost(post.id)}
+            />
+          ))}
       </div>
       <CommentsDialog
         postId={commentsPostId}

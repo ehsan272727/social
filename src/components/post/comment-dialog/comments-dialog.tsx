@@ -10,7 +10,7 @@ import { useEffect } from "react";
 import { CommentWithInfo } from "@/types/comment";
 import { Comment } from "@/components/post/comment";
 import { deleteCommentAction } from "@/app/(actions)/post/comment";
-import { api } from "@/lib/axios-instance";
+import { api } from "@/lib/api/axios-instance";
 import { motion, AnimatePresence } from "motion/react";
 
 interface Props {

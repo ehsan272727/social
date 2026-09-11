@@ -1,53 +1,26 @@
-import { auth } from "@/lib/auth";
-import prisma from "@/lib/prisma";
 import { PostWithInfo } from "@/types/post";
-import { headers } from "next/headers";
 import { ClientPage } from "./client";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
+import { getPosts } from "./getPosts";
 
 export default async function Home() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const queryClient = new QueryClient();
 
-  const posts: PostWithInfo[] = await prisma.post.findMany({
-    include: {
-      user: {
-        select: {
-          username: true,
-          image: true,
-        },
-      },
-      _count: {
-        select: {
-          likes: true,
-        },
-      },
-      likes: session
-        ? {
-            where: {
-              userId: session.user.id,
-            },
-            take: 1,
-            select: {
-              id: true,
-            },
-          }
-        : {
-            take: 0,
-            select: {
-              id: true,
-            },
-          },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
+  await queryClient.prefetchQuery<PostWithInfo[] | undefined>({
+    queryKey: ["posts"],
+    queryFn: getPosts,
   });
 
   return (
     <div className="">
       <main className="m-5">
-        <ClientPage posts={posts} />
+        <HydrationBoundary state={dehydrate(queryClient)}>
+          <ClientPage />
+        </HydrationBoundary>
       </main>
     </div>
   );

@@ -4,7 +4,7 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import { toast } from "@/components/ui/toast";
-import { api } from "@/lib/axios-instance";
+import { api } from "@/lib/api/axios-instance";
 import { Media } from "@/prisma/generated/client";
 import { ApiResponse } from "@/types/api/response";
 import { useQuery } from "@tanstack/react-query";
