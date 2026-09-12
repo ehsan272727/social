@@ -73,7 +73,7 @@ export function Post({
 
   return (
     <div>
-      <div className="flex flex-col gap-2 rounded-md border">
+      <div className="mx-auto max-w-96 flex flex-col gap-2 rounded-md border">
         <div className="flex justify-between items-center p-2 border-b">
           <div className="flex items-center gap-2">
             <div className="w-fit border rounded-full">
