@@ -4,7 +4,7 @@ import { PostWithInfo } from "@/types/post";
 import clsx from "clsx";
 import { MessageCircle, ThumbsUp, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LikeAction } from "@/app/(actions)/post/like";
 import { toast } from "@/components/ui/toast";
 import { authClient } from "@/lib/auth-client";
@@ -15,32 +15,16 @@ import { PostMedia } from "./post-media/post-media";
 import { PostMenu } from "./post-menu";
 import { useQuery } from "@tanstack/react-query";
 import { Media } from "@/prisma/generated/client";
-import { api, s3Api } from "@/lib/api/axios-instance";
+import { s3Api } from "@/lib/api/axios-instance";
 import { ApiResponse } from "@/types/api/response";
 import { formatLikes } from "@/lib/post";
+import { fetchPostMedia } from "@/lib/api/post/media";
 
 interface Props {
   post: PostWithInfo;
   selectPostId: (postId: string) => void;
   openSignInDialog: () => void;
   handleDeletePost: () => void;
-}
-
-async function fetchMedia(postId: string): Promise<Media[]> {
-  try {
-    const media: ApiResponse<Media[]> = (await api.get(`/post/media/${postId}`))
-      .data;
-    if (media.error) {
-      throw new Error("");
-    }
-    return media.data!;
-  } catch (error) {
-    toast.add({
-      type: "error",
-      description: "Error happened while getting post media",
-    });
-    return [];
-  }
 }
 
 export function Post({
@@ -57,10 +41,20 @@ export function Post({
   const formattedLikes = formatLikes(likeState.count);
   const userProfileLink = getProfileLink(post.user.username);
 
-  const { data: media } = useQuery<Media[]>({
+  const {
+    data: media,
+    isError,
+    error,
+  } = useQuery<Media[]>({
     queryKey: ["post-media", post.id],
-    queryFn: () => fetchMedia(post.id),
+    queryFn: () => fetchPostMedia(post.id),
   });
+
+  useEffect(() => {
+    if (isError) {
+      toast.add({ type: "error", title: error.message });
+    }
+  }, [isError, error?.message]);
 
   const handleLikeToggle = async () => {
     if (!session) {
