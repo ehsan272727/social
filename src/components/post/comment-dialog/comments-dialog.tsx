@@ -10,8 +10,8 @@ import { useEffect } from "react";
 import { CommentWithInfo } from "@/types/comment";
 import { Comment } from "@/components/post/comment";
 import { deleteCommentAction } from "@/app/(actions)/post/comment";
-import { api } from "@/lib/api/axios-instance";
 import { motion, AnimatePresence } from "motion/react";
+import { fetchPostComments } from "@/lib/api/post";
 
 interface Props {
   postId: string | null;
@@ -19,23 +19,18 @@ interface Props {
   handleOpenChange: (open: boolean) => void;
 }
 
-async function getComments(postId: string) {
-  const response = await api.get("/comments", {
-    params: { postId },
-  });
-
-  return response.data;
-}
-
 export function CommentsDialog({ postId, isOpen, handleOpenChange }: Props) {
   const isMobile = useMediaQuery("(max-width: 640px)");
   const queryClient = useQueryClient();
 
-  const { data: comments, isFetching } = useQuery<
-    ApiResponse<CommentWithInfo[]>
-  >({
+  const {
+    data: comments,
+    isFetching,
+    isError,
+    error,
+  } = useQuery<CommentWithInfo[]>({
     queryKey: ["comments", postId],
-    queryFn: () => getComments(postId!),
+    queryFn: () => fetchPostComments(postId!),
     enabled: postId !== null,
   });
 
@@ -83,7 +78,8 @@ export function CommentsDialog({ postId, isOpen, handleOpenChange }: Props) {
         </div>
         <div className="p-2 overflow-y-auto">
           <AnimatePresence>
-            {comments?.data && !isFetching && (
+            {isError && error && <div className="my-2">{error.message}</div>}
+            {!isError && comments && !isFetching && (
               <motion.div
                 className="mt-2 flex flex-col gap-5"
                 transition={{ layout: { delay: 0.1 } }}
@@ -92,7 +88,7 @@ export function CommentsDialog({ postId, isOpen, handleOpenChange }: Props) {
                 exit={{ opacity: 0, y: -10 }}
               >
                 <AnimatePresence>
-                  {comments.data.map((comment) => (
+                  {comments.map((comment) => (
                     <motion.div
                       key={comment.id}
                       initial={{ opacity: 0, y: -5 }}
