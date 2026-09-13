@@ -10,9 +10,7 @@ import { toast } from "@/components/ui/toast";
 import { useQuery } from "@tanstack/react-query";
 import { getPosts } from "./getPosts";
 
-interface Props {}
-
-export function ClientPage({}: Props) {
+export function ClientPage() {
   const [isSignInDialogOpen, setSignInDialog] = useState(false);
   const [commentsPostId, setCommentsPostId] = useState<string | null>(null);
   const isCommentsOpen = commentsPostId !== null;

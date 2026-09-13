@@ -9,7 +9,7 @@ import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
 
 interface Props {
-  media: Media[];
+  media?: Media[];
 }
 
 export function PostMedia({ media }: Props) {

@@ -17,22 +17,13 @@ import { useQuery } from "@tanstack/react-query";
 import { Media } from "@/prisma/generated/client";
 import { api, s3Api } from "@/lib/api/axios-instance";
 import { ApiResponse } from "@/types/api/response";
+import { formatLikes } from "@/lib/post";
 
 interface Props {
   post: PostWithInfo;
   selectPostId: (postId: string) => void;
   openSignInDialog: () => void;
   handleDeletePost: () => void;
-}
-
-function formatLikes(likes: number) {
-  if (likes < 1000) {
-    return likes;
-  } else if (likes >= 1000 && likes < 1000000) {
-    return `${(likes / 1000).toFixed(2)}K`;
-  } else if (likes >= 1000000) {
-    return `${(likes / 1000000).toFixed(2)}M`;
-  }
 }
 
 async function fetchMedia(postId: string): Promise<Media[]> {
