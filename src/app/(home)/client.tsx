@@ -8,7 +8,6 @@ import { useState } from "react";
 import { deletePostAction } from "../(actions)/post/post-actions";
 import { toast } from "@/components/ui/toast";
 import { useQuery } from "@tanstack/react-query";
-import { ApiResponse } from "@/types/api/response";
 import { getPosts } from "./getPosts";
 
 interface Props {}
@@ -46,7 +45,7 @@ export function ClientPage({}: Props) {
               post={post}
               selectPostId={(postId) => setCommentsPostId(postId)}
               openSignInDialog={() => setSignInDialog(false)}
-              handleDelete={() => handleDeletePost(post.id)}
+              handleDeletePost={() => handleDeletePost(post.id)}
             />
           ))}
       </div>

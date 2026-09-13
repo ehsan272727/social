@@ -13,12 +13,16 @@ import { getProfileLink } from "@/lib/get-profile-link";
 import { getRelativeTime } from "@/lib/time";
 import { PostMedia } from "./post-media/post-media";
 import { PostMenu } from "./post-menu";
+import { useQuery } from "@tanstack/react-query";
+import { Media } from "@/prisma/generated/client";
+import { api, s3Api } from "@/lib/api/axios-instance";
+import { ApiResponse } from "@/types/api/response";
 
 interface Props {
   post: PostWithInfo;
   selectPostId: (postId: string) => void;
   openSignInDialog: () => void;
-  handleDelete: () => void;
+  handleDeletePost: () => void;
 }
 
 function formatLikes(likes: number) {
@@ -31,11 +35,28 @@ function formatLikes(likes: number) {
   }
 }
 
+async function fetchMedia(postId: string): Promise<Media[]> {
+  try {
+    const media: ApiResponse<Media[]> = (await api.get(`/post/media/${postId}`))
+      .data;
+    if (media.error) {
+      throw new Error("");
+    }
+    return media.data!;
+  } catch (error) {
+    toast.add({
+      type: "error",
+      description: "Error happened while getting post media",
+    });
+    return [];
+  }
+}
+
 export function Post({
   post,
   selectPostId,
   openSignInDialog,
-  handleDelete,
+  handleDeletePost,
 }: Props) {
   const { data: session } = authClient.useSession();
   const [likeState, setLikeState] = useState({
@@ -44,6 +65,11 @@ export function Post({
   });
   const formattedLikes = formatLikes(likeState.count);
   const userProfileLink = getProfileLink(post.user.username);
+
+  const { data: media } = useQuery<Media[]>({
+    queryKey: ["post-media", post.id],
+    queryFn: () => fetchMedia(post.id),
+  });
 
   const handleLikeToggle = async () => {
     if (!session) {
@@ -69,6 +95,23 @@ export function Post({
       setLikeState(previous);
       toast.add({ type: "error", description: "An unknown error happened" });
     }
+  };
+
+  const handleDelete = async () => {
+    if (media) {
+      for (const mediaObj of media) {
+        const result: ApiResponse<string> = (
+          await s3Api.delete("/delete", {
+            data: { key: mediaObj.key },
+          })
+        ).data;
+
+        if (result.error) {
+          toast.add({ type: "error", title: result.error });
+        }
+      }
+    }
+    handleDeletePost();
   };
 
   return (
@@ -100,7 +143,7 @@ export function Post({
         </div>
         <h2 className="p-2 font-bold">{post.title}</h2>
         {post.content && <p className="p-2">{post.content}</p>}
-        <PostMedia postId={post.id} />
+        <PostMedia media={media} />
         <div className="flex flex-col gap-2 p-2 border-t">
           <p className="text-xs md:text-sm">
             Posted {getRelativeTime(post.createdAt)}

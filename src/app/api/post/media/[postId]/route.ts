@@ -5,7 +5,7 @@ export async function GET(
   { params }: { params: Promise<{ postId: string }> },
 ) {
   const { postId } = await params;
-  console.log(postId);
+  console.log("Hey from post media");
 
   if (!postId) {
     return Response.json({
