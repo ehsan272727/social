@@ -12,6 +12,9 @@ import { Comment } from "@/components/post/comment";
 import { deleteCommentAction } from "@/app/(actions)/post/comment";
 import { motion, AnimatePresence } from "motion/react";
 import { fetchPostComments } from "@/lib/api/post";
+import { authClient } from "@/lib/auth-client";
+import Link from "next/link";
+import { LogIn } from "lucide-react";
 
 interface Props {
   postId: string | null;
@@ -22,6 +25,7 @@ interface Props {
 export function CommentsDialog({ postId, isOpen, handleOpenChange }: Props) {
   const isMobile = useMediaQuery("(max-width: 640px)");
   const queryClient = useQueryClient();
+  const { data: session } = authClient.useSession();
 
   const {
     data: comments,
@@ -74,7 +78,17 @@ export function CommentsDialog({ postId, isOpen, handleOpenChange }: Props) {
           Comments
         </DrawerHeader>
         <div className="p-2">
-          <CommentInput postId={postId} />
+          {session ? (
+            <CommentInput postId={postId} />
+          ) : (
+            <Link
+              href="/sign-in"
+              className="mt-3 w-fit mx-auto flex items-center justify-center gap-1.5 p-2 border rounded-md hover:bg-gray-50"
+            >
+              Sign in to comment
+              <LogIn className="size-5" />
+            </Link>
+          )}
         </div>
         <div className="p-2 overflow-y-auto">
           <AnimatePresence>

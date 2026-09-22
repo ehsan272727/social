@@ -211,16 +211,18 @@ export function Comment({
           </p>
 
           {/* ---- Reply button for opening the reply input ---- */}
-          <button
-            onClick={() => {
-              setShowReplies(true);
-              setIsReplyOpen((prev) => !prev);
-            }}
-            className="mt-2 self-start flex items-center gap-1 opacity-70 hover:opacity-100"
-          >
-            <Reply className="size-4.5 sm:size-5" />
-            Reply
-          </button>
+          {session && (
+            <button
+              onClick={() => {
+                setShowReplies(true);
+                setIsReplyOpen((prev) => !prev);
+              }}
+              className="mt-2 self-start flex items-center gap-1 opacity-70 hover:opacity-100"
+            >
+              <Reply className="size-4.5 sm:size-5" />
+              Reply
+            </button>
+          )}
           {/* ------- Show replies Button ------- */}
           {repliesCount > 0 && (
             <button
