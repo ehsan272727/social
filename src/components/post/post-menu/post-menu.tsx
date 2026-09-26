@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { EllipsisVertical } from "lucide-react";
+import { EllipsisVertical, TriangleAlert } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,6 +46,12 @@ export function PostMenu({ isOwnPost, deletePost }: Props) {
                 Delete post
               </DropdownMenuItem>
             )}
+            <DropdownMenuItem
+              onClick={() => {}}
+              className="flex items-center text-red-700"
+            >
+              Report <TriangleAlert className="ml-auto" />
+            </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
