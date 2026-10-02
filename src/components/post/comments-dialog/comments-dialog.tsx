@@ -8,7 +8,7 @@ import { ApiResponse } from "@/types/api/response";
 import { CommentsListSkeleton } from "@/components/skeleton-ui/comment-skeleton";
 import { useEffect } from "react";
 import { CommentWithInfo } from "@/types/comment";
-import { Comment } from "@/components/post/comment";
+import { Comment } from "./comment";
 import { deleteCommentAction } from "@/app/(actions)/post/comment";
 import { motion, AnimatePresence } from "motion/react";
 import { fetchPostComments } from "@/lib/api/post";

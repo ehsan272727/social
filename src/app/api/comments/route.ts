@@ -1,9 +1,14 @@
+import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { ERROR_MESSAGES } from "@/util/error-messages";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
+import { headers } from "next/headers";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
   const postId = searchParams.get("postId");
 
@@ -36,6 +41,15 @@ export async function GET(request: Request) {
           select: {
             replies: true,
           },
+        },
+        likes: {
+          where: {
+            userId: session?.user.id,
+          },
+          select: {
+            id: true,
+          },
+          take: 1,
         },
       },
     });

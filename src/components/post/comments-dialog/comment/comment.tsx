@@ -6,7 +6,7 @@ import { ReplyInput } from "@/components/inputs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiResponse } from "@/types/api/response";
 import { CommentsListSkeleton } from "@/components/skeleton-ui/comment-skeleton";
-import { CommentMenu } from "@/components/post/comment-menu";
+import { CommentMenu } from "./comment-menu";
 import { authClient } from "@/lib/auth-client";
 import {
   deleteCommentAction,
@@ -44,7 +44,6 @@ export function Comment({
   const [isReplyOpen, setIsReplyOpen] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const { data: session } = authClient.useSession();
 
   const queryClient = useQueryClient();
   const queryKey = isReply
