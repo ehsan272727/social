@@ -12,20 +12,25 @@ import { Comment } from "./comment";
 import { deleteCommentAction } from "@/app/(actions)/post/comment";
 import { motion, AnimatePresence } from "motion/react";
 import { fetchPostComments } from "@/lib/api/post";
-import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 import { LogIn } from "lucide-react";
+import { AuthUser } from "@/types/user";
 
 interface Props {
   postId: string | null;
   isOpen: boolean;
+  user?: AuthUser;
   handleOpenChange: (open: boolean) => void;
 }
 
-export function CommentsDialog({ postId, isOpen, handleOpenChange }: Props) {
+export function CommentsDialog({
+  postId,
+  isOpen,
+  user,
+  handleOpenChange,
+}: Props) {
   const isMobile = useMediaQuery("(max-width: 640px)");
   const queryClient = useQueryClient();
-  const { data: session } = authClient.useSession();
 
   const {
     data: comments,
@@ -78,7 +83,7 @@ export function CommentsDialog({ postId, isOpen, handleOpenChange }: Props) {
           Comments
         </DrawerHeader>
         <div className="p-2">
-          {session ? (
+          {user ? (
             <CommentInput postId={postId} />
           ) : (
             <Link
@@ -93,7 +98,7 @@ export function CommentsDialog({ postId, isOpen, handleOpenChange }: Props) {
         <div className="p-2 overflow-y-auto">
           <AnimatePresence>
             {isError && error && <div className="my-2">{error.message}</div>}
-            {!isError && comments && !isFetching && (
+            {!isError && !isFetching && comments && (
               <motion.div
                 className="mt-2 flex flex-col gap-5"
                 transition={{ layout: { delay: 0.1 } }}
@@ -112,6 +117,7 @@ export function CommentsDialog({ postId, isOpen, handleOpenChange }: Props) {
                     >
                       <Comment
                         data={comment}
+                        user={user}
                         handleDeleteComment={(commentId) =>
                           deleteCommentMutate(commentId)
                         }

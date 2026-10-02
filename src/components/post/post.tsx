@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { LikeAction } from "@/app/(actions)/post/like";
 import { toast } from "@/components/ui/toast";
-import { authClient } from "@/lib/auth-client";
 import Image from "next/image";
 import { getProfileLink } from "@/lib/get-profile-link";
 import { getRelativeTime } from "@/lib/time";
@@ -19,9 +18,11 @@ import { s3Api } from "@/lib/api/axios-instance";
 import { ApiResponse } from "@/types/api/response";
 import { formatLikes } from "@/lib/post";
 import { fetchPostMedia } from "@/lib/api/post/media";
+import { AuthUser } from "@/types/user";
 
 interface Props {
   post: PostWithInfo;
+  user?: AuthUser;
   selectPostId: (postId: string) => void;
   openSignInDialog: () => void;
   handleDeletePost: () => void;
@@ -29,11 +30,11 @@ interface Props {
 
 export function Post({
   post,
+  user,
   selectPostId,
   openSignInDialog,
   handleDeletePost,
 }: Props) {
-  const { data: session } = authClient.useSession();
   const [likeState, setLikeState] = useState({
     isLiked: post.likes?.length > 0,
     count: post._count.likes,
@@ -57,7 +58,7 @@ export function Post({
   }, [isError, error?.message]);
 
   const handleLikeToggle = async () => {
-    if (!session) {
+    if (!user) {
       openSignInDialog();
       return;
     }
@@ -122,7 +123,7 @@ export function Post({
             <a href={userProfileLink}>{post.user.username}</a>
           </div>
           <PostMenu
-            isOwnPost={session?.user.id === post.userId}
+            isOwnPost={user?.id === post.userId}
             deletePost={handleDelete}
           />
         </div>

@@ -9,11 +9,14 @@ import { deletePostAction } from "../(actions)/post/post-actions";
 import { toast } from "@/components/ui/toast";
 import { useQuery } from "@tanstack/react-query";
 import { getPosts } from "./getPosts";
+import { authClient } from "@/lib/auth-client";
 
 export function ClientPage() {
   const [isSignInDialogOpen, setSignInDialog] = useState(false);
   const [commentsPostId, setCommentsPostId] = useState<string | null>(null);
   const isCommentsOpen = commentsPostId !== null;
+
+  const { data: session } = authClient.useSession();
 
   const { data: posts, refetch: refetchPosts } = useQuery<
     PostWithInfo[] | undefined
@@ -41,6 +44,7 @@ export function ClientPage() {
             <Post
               key={post.id}
               post={post}
+              user={session?.user}
               selectPostId={(postId) => setCommentsPostId(postId)}
               openSignInDialog={() => setSignInDialog(false)}
               handleDeletePost={() => handleDeletePost(post.id)}
@@ -50,6 +54,7 @@ export function ClientPage() {
       <CommentsDialog
         postId={commentsPostId}
         isOpen={isCommentsOpen}
+        user={session?.user}
         handleOpenChange={(open) => {
           if (!open) {
             setCommentsPostId(null);

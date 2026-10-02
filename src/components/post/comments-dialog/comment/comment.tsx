@@ -7,7 +7,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiResponse } from "@/types/api/response";
 import { CommentsListSkeleton } from "@/components/skeleton-ui/comment-skeleton";
 import { CommentMenu } from "./comment-menu";
-import { authClient } from "@/lib/auth-client";
 import {
   deleteCommentAction,
   editCommentAction,
@@ -17,11 +16,13 @@ import { getRelativeTime } from "@/lib/time";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 import { CommentEditable } from "@/components/inputs/comment-editable/comment-editable";
+import { AuthUser } from "@/types/user";
 
 interface Props {
   isReply?: boolean;
   data: CommentWithInfo;
   isDeletingComment?: boolean;
+  user?: AuthUser;
   handleDeleteComment?: (commentId: string) => void;
   handleDeleteReply?: (commentId: string) => void;
 }
@@ -37,6 +38,7 @@ async function getReplies(parentId: string) {
 export function Comment({
   data,
   isReply = false,
+  user,
   handleDeleteComment,
   isDeletingComment = false,
 }: Props) {
@@ -187,7 +189,7 @@ export function Comment({
             )}
           </div>
           <div aria-label="comment content" className="mt-1 text-base">
-            {session && session.user.id === data.userId ? (
+            {user && user.id === data.userId ? (
               <CommentEditable
                 isEditing={isEditing}
                 setIsEditing={setIsEditing}
@@ -210,7 +212,7 @@ export function Comment({
           </p>
 
           {/* ---- Reply button for opening the reply input ---- */}
-          {session && (
+          {user && (
             <button
               onClick={() => {
                 setShowReplies(true);
@@ -243,7 +245,7 @@ export function Comment({
           )}
         </div>
         {/* Show comment menu if the comment belongs to the logged in user */}
-        {session && session.user.id === data.userId && (
+        {user && user.id === data.userId && (
           <CommentMenu
             openEdit={() => setIsEditing(true)}
             handleDeleteComment={
