@@ -42,15 +42,15 @@ export async function GET(request: Request) {
             replies: true,
           },
         },
-        likes: {
-          where: {
-            userId: session?.user.id,
-          },
-          select: {
-            id: true,
-          },
-          take: 1,
-        },
+        // likes: {
+        //   where: {
+        //     userId: session?.user.id,
+        //   },
+        //   select: {
+        //     id: true,
+        //   },
+        //   take: 1,
+        // },
       },
     });
     return Response.json({

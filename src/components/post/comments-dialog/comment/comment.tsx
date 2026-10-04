@@ -28,11 +28,17 @@ interface Props {
 }
 
 async function getReplies(parentId: string) {
-  const response = await api.get("/replies", {
-    params: { parentId },
-  });
+  const response: ApiResponse<CommentWithInfo[]> = (
+    await api.get("/replies", {
+      params: { parentId },
+    })
+  ).data;
 
-  return response.data;
+  if (response.error) {
+    throw new Error(response.error);
+  }
+
+  return response.data!;
 }
 
 export function Comment({
@@ -53,32 +59,28 @@ export function Comment({
     : ["comments", data.postId!];
   const editMutationKey = ["edit", data.id];
 
-  const { data: replies, isFetching } = useQuery<
-    ApiResponse<CommentWithInfo[]>
-  >({
+  const { data: replies, isFetching } = useQuery<CommentWithInfo[]>({
     queryKey: ["replies", data.id],
     queryFn: () => getReplies(data.id),
     enabled: showReplies,
   });
 
   const repliesCount = useMemo(() => {
-    return replies?.data ? replies.data.length : data._count.replies;
-  }, [replies?.data, data._count.replies]);
+    return replies ? replies.length : data._count.replies;
+  }, [replies, data._count.replies]);
 
   const { isPending: isDeletingReply, mutate: deleteReplyMutate } = useMutation(
     {
       mutationFn: (commentId: string) => deleteCommentAction({ commentId }),
 
       onSuccess: (response) => {
-        queryClient.setQueryData<ApiResponse<CommentWithInfo[]>>(
+        queryClient.setQueryData<CommentWithInfo[]>(
           queryKey,
 
           (prev) => {
-            if (!prev?.data) return { data: [] };
+            if (!prev) return [];
 
-            return {
-              data: prev.data.filter((data) => data.id !== response.data),
-            };
+            return prev.filter((data) => data.id !== response.data);
           },
         );
       },
@@ -103,26 +105,19 @@ export function Comment({
     },
     mutationKey: editMutationKey,
     onSuccess: (_, editedComment) =>
-      queryClient.setQueryData<ApiResponse<CommentWithInfo[]>>(
-        queryKey,
-        (oldComments) => {
-          if (!oldComments?.data) return { data: [] };
-          if (editedComment.newContent.trim().length === 0) {
-            return {
-              data: oldComments.data.filter(
-                (comment) => comment.id !== editedComment.commentId,
-              ),
-            };
-          }
-          return {
-            data: oldComments.data.map((comment) =>
-              comment.id === editedComment.commentId
-                ? { ...comment, content: editedComment.newContent }
-                : comment,
-            ),
-          };
-        },
-      ),
+      queryClient.setQueryData<CommentWithInfo[]>(queryKey, (oldComments) => {
+        if (!oldComments) return [];
+        if (editedComment.newContent.trim().length === 0) {
+          return oldComments.filter(
+            (comment) => comment.id !== editedComment.commentId,
+          );
+        }
+        return oldComments.map((comment) =>
+          comment.id === editedComment.commentId
+            ? { ...comment, content: editedComment.newContent }
+            : comment,
+        );
+      }),
   });
 
   function handleReplyToggle() {
@@ -261,7 +256,7 @@ export function Comment({
 
       <div className={!data.parentId ? "ml-9" : ""}>
         <AnimatePresence>
-          {showReplies && replies?.data && !isFetching && (
+          {showReplies && replies && !isFetching && (
             <motion.div
               transition={{ layout: { delay: 0.1 } }}
               initial={{ opacity: 0, y: -10 }}
@@ -269,7 +264,7 @@ export function Comment({
               exit={{ opacity: 0, y: -10 }}
             >
               <AnimatePresence>
-                {replies.data.map((reply) => (
+                {replies.map((reply) => (
                   <motion.div
                     key={reply.id}
                     initial={{ opacity: 0, y: -5 }}
@@ -280,6 +275,7 @@ export function Comment({
                     <Comment
                       data={reply}
                       isReply={true}
+                      user={user}
                       handleDeleteReply={() => deleteReplyMutate(reply.id)}
                     />
                   </motion.div>

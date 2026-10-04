@@ -43,11 +43,11 @@ export function CommentInput({ postId }: Props) {
           return;
         }
 
-        queryClient.setQueryData<ApiResponse<CommentWithInfo[]>>(
+        queryClient.setQueryData<CommentWithInfo[]>(
           ["comments", postId],
-          (old) => {
-            if (!old?.data) return { data: [newComment.data] };
-            return { data: [newComment.data, ...old.data] };
+          (oldComments) => {
+            if (!oldComments) return [newComment.data];
+            return [newComment.data, ...oldComments];
           },
         );
 

@@ -45,11 +45,11 @@ export function ReplyInput({ comment, closeReplyInput }: Props) {
           toast.add({ type: "error", description: newReply.error });
           return;
         }
-        queryClient.setQueryData<ApiResponse<CommentWithInfo[]>>(
+        queryClient.setQueryData<CommentWithInfo[]>(
           ["replies", comment.id],
-          (old) => {
-            if (!old?.data) return { data: [newReply.data] };
-            return { data: [newReply.data, ...old.data] };
+          (oldReplies) => {
+            if (!oldReplies) return [newReply.data];
+            return [newReply.data, ...oldReplies];
           },
         );
 

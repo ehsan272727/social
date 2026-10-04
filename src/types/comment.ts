@@ -28,6 +28,12 @@ export type CommentWithInfo = Prisma.CommentGetPayload<{
         replies: true;
       };
     };
+    // likes: {
+    //   select: {
+    //     id: true;
+    //   };
+    //   take: 1;
+    // };
   };
 }>;
 

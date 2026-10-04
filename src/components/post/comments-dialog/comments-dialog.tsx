@@ -4,7 +4,6 @@ import { Drawer, DrawerHeader, DrawerContent } from "@/components/ui/drawer";
 import { useMediaQuery } from "usehooks-ts";
 import { CommentInput } from "@/components/inputs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ApiResponse } from "@/types/api/response";
 import { CommentsListSkeleton } from "@/components/skeleton-ui/comment-skeleton";
 import { useEffect } from "react";
 import { CommentWithInfo } from "@/types/comment";
@@ -51,15 +50,13 @@ export function CommentsDialog({
     mutationFn: (commentId: string) => deleteCommentAction({ commentId }),
 
     onSuccess: (response) => {
-      queryClient.setQueryData<ApiResponse<CommentWithInfo[]>>(
+      queryClient.setQueryData<CommentWithInfo[]>(
         ["comments", postId],
 
         (prev) => {
-          if (!prev?.data) return { data: [] };
+          if (!prev) return [];
 
-          return {
-            data: prev.data.filter((data) => data.id !== response.data),
-          };
+          return prev.filter((data) => data.id !== response.data);
         },
       );
     },
