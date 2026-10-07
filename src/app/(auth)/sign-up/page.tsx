@@ -21,12 +21,11 @@ import { CircleSmall, UserRoundPlus } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormInput } from "@/components/inputs";
-import { PasswordInput } from "@/components/inputs/password-input";
+import { FormInput } from "@/components/inputs/form-input";
+import { PasswordInput } from "@/components/inputs/password-input/password-input";
 import { signUpAction } from "./actions";
 import { useState, useTransition } from "react";
 import { toast } from "@/components/ui/toast";
-import { ActionResponse } from "@/types/action";
 import { useRouter } from "next/navigation";
 import { Spinner } from "@/components/ui/spinner";
 
@@ -80,7 +79,6 @@ export default function SignUp() {
     defaultValues: {
       name: "",
       username: "",
-      displayUsername: "",
       email: "",
       password: "",
       passwordConfirm: "",
@@ -165,14 +163,6 @@ export default function SignUp() {
               name="username"
               label="username"
               isRequired={true}
-            />
-            {/* ====================== */}
-            <FormInput<SignUpFormData>
-              formControl={control}
-              name="displayUsername"
-              label="display username"
-              placeholder={usernameValue}
-              description="The name other users see"
             />
             {/* ====================== */}
             <FormInput<SignUpFormData>

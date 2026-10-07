@@ -11,8 +11,6 @@ import {
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { authClient } from "@/lib/auth";
-import { isAPIError } from "better-auth/api";
 import { SendHorizonal } from "lucide-react";
 import Link from "next/link";
 

@@ -15,7 +15,6 @@ import { Spinner } from "@/components/ui/spinner";
 import { toast } from "@/components/ui/toast";
 import { authClient } from "@/lib/auth-client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { isAPIError } from "better-auth/api";
 import { Ban, LogIn } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -40,18 +39,6 @@ export default function SignIn() {
   const router = useRouter();
   const [signingIn, setSigningIn] = useState(false);
   const [errorState, setErrorState] = useState<string | undefined>("");
-
-  async function handleGoogleSignIn() {
-    try {
-      const data = await authClient.signIn.social({
-        provider: "google",
-      });
-    } catch (error) {
-      if (isAPIError(error)) {
-        return "an Error happened in sign in";
-      }
-    }
-  }
 
   async function onSubmit(data: z.output<typeof signInSchema>) {
     setErrorState(undefined);

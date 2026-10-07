@@ -9,7 +9,7 @@ import {
   SquarePlus,
   UserRoundArrowLeft,
 } from "lucide-react";
-import { NavbarProps } from "./navbar";
+import { NavbarProps } from "../navbar";
 
 export function MobileNav({
   isSignedIn,
@@ -18,7 +18,7 @@ export function MobileNav({
 }: NavbarProps) {
   // grid-flow-col auto-cols-fr
   return (
-    <nav className="sm:hidden w-full fixed bottom-0 left-0 px-0.5 pb-0.5 bg-white border-t">
+    <nav className="z-100 sm:hidden w-full fixed bottom-0 left-0 px-0.5 pb-0.5 bg-white border-t">
       <div className="grid grid-cols-5 justify-center items-center gap-2 overflow-y-scroll">
         <Link
           href="/"

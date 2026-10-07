@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { NavbarProps } from "./navbar";
+import { NavbarProps } from "../navbar";
 import {
   Bell,
   CircleUserRound,
@@ -10,7 +10,6 @@ import {
   SquarePlus,
   UserRoundArrowLeft,
 } from "lucide-react";
-import { Button } from "@base-ui/react";
 
 export function DesktopNav({
   isSignedIn,

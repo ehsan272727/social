@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/field";
 import { Control, Controller, FieldValues, Path } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-import { type ComponentProps, HTMLInputTypeAttribute, useId } from "react";
+import { HTMLInputTypeAttribute, useId } from "react";
 
 interface Props<T extends FieldValues> {
   formControl: Control<T, unknown, unknown>;
