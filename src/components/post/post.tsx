@@ -5,7 +5,7 @@ import clsx from "clsx";
 import { MessageCircle, ThumbsUp, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { LikeAction } from "@/app/(actions)/post/like";
+import { likeAction } from "@/app/(actions)/post/like";
 import { toast } from "@/components/ui/toast";
 import Image from "next/image";
 import { getProfileLink } from "@/lib/get-profile-link";
@@ -19,21 +19,22 @@ import { ApiResponse } from "@/types/api/response";
 import { formatLikes } from "@/lib/post";
 import { fetchPostMedia } from "@/lib/api/post/media";
 import { AuthUser } from "@/types/user";
+import { deletePostAction } from "@/app/(actions)/post/post-actions";
 
 interface Props {
   post: PostWithInfo;
   user?: AuthUser;
   selectPostId: (postId: string) => void;
   openSignInDialog: () => void;
-  handleDeletePost: () => void;
+  refetchPosts: () => void;
 }
 
 export function Post({
   post,
   user,
+  refetchPosts,
   selectPostId,
   openSignInDialog,
-  handleDeletePost,
 }: Props) {
   const [likeState, setLikeState] = useState({
     isLiked: post.likes?.length > 0,
@@ -69,11 +70,11 @@ export function Post({
     });
 
     try {
-      const result = await LikeAction({
+      const result = await likeAction({
         postId: post.id,
         isLiked: !previous.isLiked,
       });
-      if ("error" in result) {
+      if (result.error) {
         setLikeState(previous);
         toast.add({ type: "error", description: result.error });
       }
@@ -84,6 +85,7 @@ export function Post({
   };
 
   const handleDelete = async () => {
+    let isMediaDeleted = true;
     if (media) {
       for (const mediaObj of media) {
         const result: ApiResponse<string> = (
@@ -93,11 +95,24 @@ export function Post({
         ).data;
 
         if (result.error) {
+          isMediaDeleted = false;
           toast.add({ type: "error", title: result.error });
+          break;
         }
       }
     }
-    handleDeletePost();
+    if (!isMediaDeleted) {
+      return;
+    }
+
+    const result = await deletePostAction(post.id);
+
+    if (result.error) {
+      toast.add({ type: "error", title: result.error });
+    } else {
+      toast.add({ title: result.data });
+      refetchPosts();
+    }
   };
 
   return (

@@ -5,7 +5,7 @@ import { CommentsDialog } from "@/components/post/comments-dialog";
 import { Post } from "@/components/post/post";
 import { PostWithInfo } from "@/types/post";
 import { useState } from "react";
-import { deletePostAction } from "../(actions)/post/post-actions";
+import { deletePostAction } from "@/app/(actions)/post/post-actions";
 import { toast } from "@/components/ui/toast";
 import { useQuery } from "@tanstack/react-query";
 import { getPosts } from "./getPosts";
@@ -25,17 +25,6 @@ export function ClientPage() {
     queryFn: getPosts,
   });
 
-  const handleDeletePost = async (postId: string) => {
-    const result = await deletePostAction(postId);
-
-    if (result.error) {
-      toast.add({ type: "error", title: result.error });
-    } else {
-      refetchPosts();
-      toast.add({ title: result.data });
-    }
-  };
-
   return (
     <>
       <div className="flex flex-col gap-9">
@@ -45,9 +34,9 @@ export function ClientPage() {
               key={post.id}
               post={post}
               user={session?.user}
+              refetchPosts={refetchPosts}
               selectPostId={(postId) => setCommentsPostId(postId)}
               openSignInDialog={() => setSignInDialog(false)}
-              handleDeletePost={() => handleDeletePost(post.id)}
             />
           ))}
       </div>
