@@ -11,7 +11,7 @@ interface Props {
   isLiked: boolean;
 }
 
-export async function LikeAction({
+export async function likeAction({
   postId,
   isLiked,
 }: Props): Promise<ApiResponse<null>> {
