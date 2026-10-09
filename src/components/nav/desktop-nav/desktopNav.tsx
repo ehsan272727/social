@@ -12,9 +12,11 @@ import {
 } from "lucide-react";
 
 export function DesktopNav({
+  profileLink,
   isSignedIn,
   selectedNav,
   onNavChange,
+  goToOwnProfile,
 }: NavbarProps) {
   return (
     <nav className="h-lvh hidden sm:block w-full pl-3 pr-2 py-2 font-bold  border-r">
@@ -53,7 +55,7 @@ export function DesktopNav({
           <span className="hidden md:inline text-sm">Notifications</span>
         </Link>
         <Link
-          href={isSignedIn ? "/profile" : "/sign-in"}
+          href={isSignedIn ? profileLink : "/sign-in"}
           onClick={() => onNavChange("/profile")}
           className={`flex items-center gap-3 py-2.5 px-2.5 md:pr-16 rounded-md ${selectedNav === "/profile" ? "bg-secondary" : ""}`}
         >

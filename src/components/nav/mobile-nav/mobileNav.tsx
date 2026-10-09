@@ -12,6 +12,7 @@ import {
 import { NavbarProps } from "../navbar";
 
 export function MobileNav({
+  profileLink,
   isSignedIn,
   selectedNav,
   onNavChange,
@@ -53,7 +54,7 @@ export function MobileNav({
           <span className="text-xs">Notifications</span>
         </Link>
         <Link
-          href={isSignedIn ? "/profile" : "/sign-in"}
+          href={isSignedIn ? profileLink : "/sign-in"}
           onClick={() => onNavChange("/profile")}
           className={`flex flex-col items-center p-2 rounded-md ${selectedNav === "/profile" ? "bg-secondary" : ""}`}
         >
