@@ -3,11 +3,14 @@ import prisma from "@/lib/prisma";
 import { ERROR_MESSAGES } from "@/util/error-messages";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { headers } from "next/headers";
+import { NextRequest } from "next/server";
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
+
+  const username = req.nextUrl.searchParams.get("username");
 
   try {
     const posts = await prisma.post.findMany({
@@ -40,6 +43,13 @@ export async function GET(req: Request) {
               },
             },
       },
+      where: username
+        ? {
+            user: {
+              username,
+            },
+          }
+        : {},
       orderBy: {
         createdAt: "desc",
       },
