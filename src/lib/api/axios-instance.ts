@@ -5,6 +5,11 @@ export const api = axios.create({
   timeout: 30000,
 });
 
+export const postsApi = axios.create({
+  baseURL: "/api/posts",
+  timeout: 30000,
+});
+
 export const s3Api = axios.create({
   baseURL: "/api/s3",
   timeout: 30000,
