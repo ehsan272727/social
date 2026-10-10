@@ -13,23 +13,23 @@ import { motion, AnimatePresence } from "motion/react";
 import { fetchPostComments } from "@/lib/api/post";
 import Link from "next/link";
 import { LogIn } from "lucide-react";
-import { AuthUser } from "@/types/user";
+import { useCommentsStore } from "@/stores/comments-store";
+import { authClient } from "@/lib/auth-client";
+import { useShallow } from "zustand/react/shallow";
 
-interface Props {
-  postId: string | null;
-  isOpen: boolean;
-  user?: AuthUser;
-  handleOpenChange: (open: boolean) => void;
-}
-
-export function CommentsDialog({
-  postId,
-  isOpen,
-  user,
-  handleOpenChange,
-}: Props) {
+export function CommentsDialog() {
   const isMobile = useMediaQuery("(max-width: 640px)");
   const queryClient = useQueryClient();
+  const session = authClient.useSession();
+  const user = session.data?.user;
+
+  const { isOpen, postId, closeComments } = useCommentsStore(
+    useShallow((store) => ({
+      isOpen: store.isOpen,
+      postId: store.postId,
+      closeComments: store.closeComments,
+    })),
+  );
 
   const {
     data: comments,
@@ -67,6 +67,12 @@ export function CommentsDialog({
       queryClient.invalidateQueries({ queryKey: ["comments", postId] });
     }
   }, [isOpen, queryClient, postId]);
+
+  const handleOpenChange = () => {
+    if (isOpen) {
+      closeComments();
+    }
+  };
 
   return (
     <Drawer

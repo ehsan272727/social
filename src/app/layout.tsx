@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/toast";
 import Providers from "./providers";
 import { GlobalAlert } from "@/components/alerts/global-alert";
 import { GlobalModals } from "@/components/modals/global-modals";
+import { CommentsDialog } from "@/components/post/comments-dialog";
 
 const notoSans = Noto_Sans({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -47,6 +48,7 @@ export default function RootLayout({
         <Providers>
           <GlobalAlert />
           <GlobalModals />
+          <CommentsDialog />
           <div className="flex">
             <Navbar />
             <div className="flex-1 p-7 pb-16">{children}</div>

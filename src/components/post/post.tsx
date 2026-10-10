@@ -21,16 +21,17 @@ import { fetchPostMedia } from "@/lib/api/post/media";
 import { AuthUser } from "@/types/user";
 import { deletePostAction } from "@/app/(actions)/post/post-actions";
 import { useModalStore } from "@/stores/modal-store";
+import { useCommentsStore } from "@/stores/comments-store";
 
 interface Props {
   post: PostWithInfo;
   user?: AuthUser;
-  selectPostId: (postId: string) => void;
   refetchPosts: () => void;
 }
 
-export function Post({ post, user, refetchPosts, selectPostId }: Props) {
+export function Post({ post, user, refetchPosts }: Props) {
   const openModal = useModalStore((store) => store.openModal);
+  const openComments = useCommentsStore((store) => store.openComments);
   const [likeState, setLikeState] = useState({
     isLiked: post.likes?.length > 0,
     count: post._count.likes,
@@ -166,7 +167,7 @@ export function Post({ post, user, refetchPosts, selectPostId }: Props) {
             <Button
               variant="outline"
               size="icon"
-              onClick={() => selectPostId(post.id)}
+              onClick={() => openComments(post.id)}
               className="w-max px-1 gap-1"
             >
               {<MessageCircle className="size-5 md:size-6" />}
