@@ -36,7 +36,6 @@ export function ClientPage() {
               user={session?.user}
               refetchPosts={refetchPosts}
               selectPostId={(postId) => setCommentsPostId(postId)}
-              openSignInDialog={() => setSignInDialog(false)}
             />
           ))}
       </div>
@@ -49,11 +48,6 @@ export function ClientPage() {
             setCommentsPostId(null);
           }
         }}
-      />
-      <SignInDialog
-        title="Sign in to like and comment"
-        isOpen={isSignInDialogOpen}
-        handleOpenChange={setSignInDialog}
       />
     </>
   );

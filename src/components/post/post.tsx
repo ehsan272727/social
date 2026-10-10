@@ -20,22 +20,17 @@ import { formatLikes } from "@/lib/post";
 import { fetchPostMedia } from "@/lib/api/post/media";
 import { AuthUser } from "@/types/user";
 import { deletePostAction } from "@/app/(actions)/post/post-actions";
+import { useModalStore } from "@/stores/modal-store";
 
 interface Props {
   post: PostWithInfo;
   user?: AuthUser;
   selectPostId: (postId: string) => void;
-  openSignInDialog: () => void;
   refetchPosts: () => void;
 }
 
-export function Post({
-  post,
-  user,
-  refetchPosts,
-  selectPostId,
-  openSignInDialog,
-}: Props) {
+export function Post({ post, user, refetchPosts, selectPostId }: Props) {
+  const openModal = useModalStore((store) => store.openModal);
   const [likeState, setLikeState] = useState({
     isLiked: post.likes?.length > 0,
     count: post._count.likes,
@@ -51,6 +46,10 @@ export function Post({
     queryKey: ["post-media", post.id],
     queryFn: () => fetchPostMedia(post.id),
   });
+
+  const openSignInDialog = () => {
+    openModal("sign-in", "sign in to like and comment");
+  };
 
   useEffect(() => {
     if (isError) {
