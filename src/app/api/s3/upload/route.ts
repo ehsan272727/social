@@ -45,7 +45,8 @@ export async function POST(req: Request) {
   //   );
   // }
 
-  const extension = fileName.split(".").pop();
+  const rawExtension: string = fileName.split(".").pop();
+  const extension = rawExtension.toLowerCase();
 
   const key = `users/${session.user.id}/posts/${crypto.randomUUID()}.${extension}`;
 
