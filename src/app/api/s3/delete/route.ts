@@ -7,8 +7,6 @@ export async function DELETE(req: Request) {
   try {
     const body = await req.json();
     const objectKey = body.key;
-    console.log("==== Object Key is ====");
-    console.log(objectKey);
 
     if (!objectKey) {
       return Response.json({ error: "Key is required" }, { status: 400 });

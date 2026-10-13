@@ -5,9 +5,12 @@ import { headers } from "next/headers";
 import { z } from "zod";
 
 const uploadRequestSchema = z.object({
-  fileName: z.string(),
+  fileName: z.string().refine((val) => val.includes("."), {
+    message: "File name must include an extension",
+  }),
   contentType: z.string(),
   size: z.number(),
+  purpose: z.enum(["profile", "post"]),
 });
 
 export async function POST(req: Request) {
@@ -34,7 +37,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const { fileName, contentType, size } = body;
+  const { fileName, contentType, size, purpose } = validation.data;
 
   // if (!contentType.startsWith("image/") && !contentType.startsWith("video/")) {
   //   return Response.json(
@@ -45,10 +48,16 @@ export async function POST(req: Request) {
   //   );
   // }
 
-  const rawExtension: string = fileName.split(".").pop();
+  const rawExtension: string = fileName.split(".").pop() ?? "jpg";
   const extension = rawExtension.toLowerCase();
+  const uniqueId = crypto.randomUUID();
 
-  const key = `users/${session.user.id}/posts/${crypto.randomUUID()}.${extension}`;
+  let key = "";
+  if (purpose === "post") {
+    key = `users/${session.user.id}/post/${uniqueId}.${extension}`;
+  } else {
+    key = `users/${session.user.id}/profile/avatar-${uniqueId}.${extension}`;
+  }
 
   try {
     const uploadUrl = await createUploadUrl({

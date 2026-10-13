@@ -74,7 +74,7 @@ export default function Create() {
               ),
             );
           };
-          const key = await uploadFile(fileInfo, updateProgress);
+          const key = await uploadFile(fileInfo, "post", updateProgress);
 
           if (!key) throw new Error();
 
@@ -95,7 +95,7 @@ export default function Create() {
     } catch (error: unknown) {
       toast.add({
         type: "error",
-        description: "An error happened while uploading post",
+        description: "An error happened while uploading the post",
       });
       await deletePostAction(postId_response!.data!);
       setIsSending(false);
