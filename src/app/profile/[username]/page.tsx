@@ -13,6 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Post } from "@/components/post/post";
 import { PostWithInfo } from "@/types/post";
 import { use } from "react";
+import { ProfileImage } from "@/components/profile/profile-image/profile-image";
 
 const getPosts = async ({ username }: { username: string }) => {
   const params = new URLSearchParams({
@@ -97,7 +98,10 @@ export default function Profile({
   return (
     <div>
       <div className="flex items-center justify-between border-b pb-2 mb-4">
-        <h1 className="font-bold">{printName}</h1>
+        <div className="flex items-center gap-3">
+          <ProfileImage session={session} />
+          <h1 className="font-bold">{printName}</h1>
+        </div>
         <Button onClick={handleSignOut} className="flex items-center">
           <span>Sign out</span>
           <LogOut />
