@@ -87,7 +87,7 @@ export function FileInput({ files, setFiles }: Props) {
                   ></div>
                   {fileType === "image" ? (
                     <Image
-                      src={fileInfo.objectUrl}
+                      src={fileInfo.objectUrl!}
                       alt="preview of the selected media"
                       width={160}
                       height={160}

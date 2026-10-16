@@ -22,6 +22,7 @@ import { AuthUser } from "@/types/user";
 import { deletePostAction } from "@/app/(actions)/post/post-actions";
 import { useModalStore } from "@/stores/modal-store";
 import { useCommentsStore } from "@/stores/comments-store";
+import { appendBucketUrl } from "@/lib/storage/url";
 
 interface Props {
   post: PostWithInfo;
@@ -38,6 +39,9 @@ export function Post({ post, user, refetchPosts }: Props) {
   });
   const formattedLikes = formatLikes(likeState.count);
   const userProfileLink = getProfileLink(post.user.username);
+  const userProfileImage = post.user.image
+    ? appendBucketUrl(post.user.image)
+    : null;
 
   const {
     data: media,
@@ -122,12 +126,14 @@ export function Post({ post, user, refetchPosts }: Props) {
           <div className="flex items-center gap-2">
             <div className="w-fit border rounded-full">
               <a href={userProfileLink}>
-                <span className="w-7 h-7 sm:w-8 s:h-8 rounded-full">
-                  {post.user.image ? (
+                <span className="w-7 h-7 sm:w-8 s:h-8">
+                  {userProfileImage ? (
                     <Image
-                      src={post.user.image}
+                      src={userProfileImage}
+                      width={28}
+                      height={28}
                       alt="profile image is not available"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover rounded-full"
                     />
                   ) : (
                     <User className="size-7 sm:size-8 opacity-50" />

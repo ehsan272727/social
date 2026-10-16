@@ -1,6 +1,12 @@
 "use client";
 
+import { toast } from "@/components/ui/toast";
+import { usersApi } from "@/lib/api/axios-instance";
+import { uploadFile } from "@/lib/api/upload";
+import { appendBucketUrl } from "@/lib/storage/url";
+import { ApiResponse } from "@/types/api/response";
 import { Session } from "@/types/auth";
+import { FileStat } from "@/types/file";
 import { UserRound } from "lucide-react";
 import Image from "next/image";
 import { useState, ChangeEvent } from "react";
@@ -10,13 +16,51 @@ interface Props {
 }
 
 export function ProfileImage({ session }: Props) {
-  const [imageUrl, setImageUrl] = useState(session?.user.image);
+  const [file, setFile] = useState<FileStat | null>(null);
+  const userImageProfile = session?.user.image
+    ? appendBucketUrl(session.user.image)
+    : "";
 
-  const handleImageSelect = (e: ChangeEvent<HTMLInputElement>) => {
+  const updateProgress = (targetFile: FileStat, progress: number) => {
+    setFile((prev) => ({ ...prev!, progress }));
+  };
+
+  const handleImageSelect = async (e: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-
+    let newFile = {};
     if (files) {
-      setImageUrl(URL.createObjectURL(files[0]));
+      newFile = {
+        file: files[0],
+        progress: 0,
+        uploading: true,
+        objectUrl: URL.createObjectURL(files[0]),
+      };
+      setFile(newFile as FileStat);
+    } else {
+      return;
+    }
+
+    try {
+      const imageUrl = await uploadFile(
+        newFile as FileStat,
+        "profile",
+        updateProgress,
+      );
+
+      if (!imageUrl) throw new Error();
+
+      const response: ApiResponse<string> = await usersApi.patch("/me/avatar", {
+        imageUrl,
+      });
+
+      console.log(response);
+      if (response.error) {
+        toast.add({ type: "error", title: response.error });
+        return;
+      }
+      toast.add({ type: "success", title: response.data });
+    } catch (error) {
+      toast.add({ type: "error", title: "Uploading image failed" });
     }
   };
 
@@ -29,12 +73,12 @@ export function ProfileImage({ session }: Props) {
           onChange={handleImageSelect}
           className="hidden"
         />
-        {imageUrl ? (
+        {file?.objectUrl || userImageProfile ? (
           <label htmlFor="profile-image-input" className="cursor-pointer">
             <div className="w-24 h-24">
               <Image
                 className="min-h-0 w-full h-full object-cover object-center rounded-full"
-                src={imageUrl}
+                src={file?.objectUrl || userImageProfile}
                 alt="profile image"
                 width={100}
                 height={100}

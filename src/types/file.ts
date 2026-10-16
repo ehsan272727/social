@@ -3,9 +3,9 @@ export interface FileStat {
   uploading: boolean;
   progress: number;
   key?: string;
-  isDeleting: boolean;
-  error: boolean;
-  objectUrl: string;
+  isDeleting?: boolean;
+  error?: boolean;
+  objectUrl?: string;
 }
 
 export interface S3ResponseObject {

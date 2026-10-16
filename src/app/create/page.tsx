@@ -18,7 +18,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { FileInput } from "@/components/inputs/file-input";
 import { FileStat } from "@/types/file";
 import { ApiResponse } from "@/types/api/response";
-import { uploadFile } from "./lib";
+import { uploadFile } from "@/lib/api/upload";
 import { deletePostAction } from "../(actions)/post/post-actions";
 import { useQueryClient } from "@tanstack/react-query";
 

@@ -14,3 +14,7 @@ export const s3Api = axios.create({
   baseURL: "/api/s3",
   timeout: 30000,
 });
+
+export const usersApi = axios.create({
+  baseURL: "/api/users",
+});

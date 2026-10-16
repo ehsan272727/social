@@ -18,7 +18,6 @@ export async function uploadFile(
       purpose: filePurpose,
     })
   ).data;
-
   if (uploadInfo.error) {
     toast.add({ type: "error", description: uploadInfo.error });
     throw new Error("Upload failed");
