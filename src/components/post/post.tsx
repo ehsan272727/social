@@ -126,14 +126,14 @@ export function Post({ post, user, refetchPosts }: Props) {
           <div className="flex items-center gap-2">
             <div className="w-fit border rounded-full">
               <a href={userProfileLink}>
-                <span className="w-7 h-7 sm:w-8 s:h-8">
+                <span className="w-7 h-7 sm:w-8 sm:h-8">
                   {userProfileImage ? (
                     <Image
                       src={userProfileImage}
                       width={28}
                       height={28}
                       alt="profile image is not available"
-                      className="w-full h-full object-cover rounded-full"
+                      className="max-w-full h-full object-cover rounded-full"
                     />
                   ) : (
                     <User className="size-7 sm:size-8 opacity-50" />

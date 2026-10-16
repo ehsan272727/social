@@ -3,6 +3,7 @@
 import { toast } from "@/components/ui/toast";
 import { usersApi } from "@/lib/api/axios-instance";
 import { uploadFile } from "@/lib/api/upload";
+import { deleteProfileImages } from "@/lib/storage/profile-image";
 import { appendBucketUrl } from "@/lib/storage/url";
 import { ApiResponse } from "@/types/api/response";
 import { Session } from "@/types/auth";
@@ -41,6 +42,9 @@ export function ProfileImage({ session }: Props) {
     }
 
     try {
+      if (session?.user) {
+        deleteProfileImages(session.user);
+      }
       const imageUrl = await uploadFile(
         newFile as FileStat,
         "profile",
@@ -52,13 +56,11 @@ export function ProfileImage({ session }: Props) {
       const response: ApiResponse<string> = await usersApi.patch("/me/avatar", {
         imageUrl,
       });
-
-      console.log(response);
       if (response.error) {
         toast.add({ type: "error", title: response.error });
         return;
       }
-      toast.add({ type: "success", title: response.data });
+      toast.add({ type: "success", title: "Profile image updated" });
     } catch (error) {
       toast.add({ type: "error", title: "Uploading image failed" });
     }
@@ -66,7 +68,7 @@ export function ProfileImage({ session }: Props) {
 
   return (
     <div>
-      <div>
+      <div className="w-24 h-24">
         <input
           type="file"
           id="profile-image-input"
@@ -75,15 +77,13 @@ export function ProfileImage({ session }: Props) {
         />
         {file?.objectUrl || userImageProfile ? (
           <label htmlFor="profile-image-input" className="cursor-pointer">
-            <div className="w-24 h-24">
-              <Image
-                className="min-h-0 w-full h-full object-cover object-center rounded-full"
-                src={file?.objectUrl || userImageProfile}
-                alt="profile image"
-                width={100}
-                height={100}
-              />
-            </div>
+            <Image
+              className="min-h-0 w-full h-full object-cover object-center rounded-full"
+              src={file?.objectUrl || userImageProfile}
+              alt="profile image"
+              width={100}
+              height={100}
+            />
           </label>
         ) : (
           <label htmlFor="profile-image-input" className="cursor-pointer">

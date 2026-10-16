@@ -1,13 +1,16 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { deleteProfileImages } from "@/lib/storage/profile-image";
+import { s3Client } from "@/lib/storage/s3";
+import { DeleteObjectsCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import { headers } from "next/headers";
 import { NextRequest } from "next/server";
 
 export async function PATCH(req: NextRequest) {
   const session = await auth.api.getSession({ headers: await headers() });
-  const { imageUrl } = await req.json();
+  const { imageUrl: newImageUrl } = await req.json();
 
-  if (!imageUrl) {
+  if (!newImageUrl) {
     return Response.json(
       { error: "Image url was not present" },
       { status: 404 },
@@ -16,7 +19,7 @@ export async function PATCH(req: NextRequest) {
 
   try {
     await prisma.user.update({
-      data: { image: imageUrl },
+      data: { image: newImageUrl },
       where: { id: session?.user.id },
     });
     return Response.json({ data: "Successfully updated user" });
