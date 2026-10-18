@@ -1,8 +1,5 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { deleteProfileImages } from "@/lib/storage/profile-image";
-import { s3Client } from "@/lib/storage/s3";
-import { DeleteObjectsCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import { headers } from "next/headers";
 import { NextRequest } from "next/server";
 
