@@ -110,7 +110,7 @@ export default function Profile({
 
       <section>
         {posts && (
-          <div className="flex flex-col">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {posts?.map((post) => (
               <Post
                 key={post.id}

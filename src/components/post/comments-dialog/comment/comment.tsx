@@ -17,6 +17,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 import { CommentEditable } from "@/components/inputs/comment-editable/comment-editable";
 import { AuthUser } from "@/types/user";
+import { appendBucketUrl } from "@/lib/storage/url";
 
 interface Props {
   isReply?: boolean;
@@ -52,6 +53,8 @@ export function Comment({
   const [isReplyOpen, setIsReplyOpen] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+
+  const userProfileImage = user?.image ? appendBucketUrl(user.image) : null;
 
   const queryClient = useQueryClient();
   const queryKey = isReply
@@ -152,17 +155,19 @@ export function Comment({
         <div className="h-fit">
           <div className="border rounded-full">
             <a href={userPageLink}>
-              <span className="w-7 h-7 sm:w-8 s:h-8 rounded-full">
-                {data.user.image ? (
+              <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
+                {userProfileImage ? (
                   <Image
-                    src={data.user.image}
+                    src={userProfileImage}
+                    width={36}
+                    height={36}
                     alt="profile image is not available"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-center rounded-full"
                   />
                 ) : (
                   <User className="size-7 sm:size-8 opacity-50" />
                 )}
-              </span>
+              </div>
             </a>
           </div>
         </div>
