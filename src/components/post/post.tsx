@@ -2,12 +2,11 @@
 
 import { PostWithInfo } from "@/types/post";
 import clsx from "clsx";
-import { MessageCircle, ThumbsUp, User } from "lucide-react";
+import { MessageCircle, ThumbsUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { likeAction } from "@/app/(actions)/post/like";
 import { toast } from "@/components/ui/toast";
-import Image from "next/image";
 import { getProfileLink } from "@/lib/get-profile-link";
 import { getRelativeTime } from "@/lib/time";
 import { PostMedia } from "./post-media/post-media";
@@ -23,6 +22,7 @@ import { deletePostAction } from "@/app/(actions)/post/post-actions";
 import { useModalStore } from "@/stores/modal-store";
 import { useCommentsStore } from "@/stores/comments-store";
 import { appendBucketUrl } from "@/lib/storage/url";
+import { MiniProfileImage } from "./mini-profile-image";
 
 interface Props {
   post: PostWithInfo;
@@ -39,9 +39,6 @@ export function Post({ post, user, refetchPosts }: Props) {
   });
   const formattedLikes = formatLikes(likeState.count);
   const userProfileLink = getProfileLink(post.user.username);
-  const userProfileImage = post.user.image
-    ? appendBucketUrl(post.user.image)
-    : null;
 
   const {
     data: media,
@@ -126,19 +123,7 @@ export function Post({ post, user, refetchPosts }: Props) {
           <div className="flex items-center gap-2">
             <div className="w-fit border rounded-full">
               <a href={userProfileLink}>
-                <span className="w-7 h-7 sm:w-8 sm:h-8">
-                  {userProfileImage ? (
-                    <Image
-                      src={userProfileImage}
-                      width={28}
-                      height={28}
-                      alt="profile image is not available"
-                      className="max-w-full h-full object-cover rounded-full"
-                    />
-                  ) : (
-                    <User className="size-7 sm:size-8 opacity-50" />
-                  )}
-                </span>
+                <MiniProfileImage imageKey={post.user.image} />
               </a>
             </div>
             <a href={userProfileLink}>{post.user.username}</a>
