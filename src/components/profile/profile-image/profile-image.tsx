@@ -9,19 +9,35 @@ import { appendBucketUrl } from "@/lib/storage/url";
 import { ApiResponse } from "@/types/api/response";
 import { Session } from "@/types/auth";
 import { FileStat } from "@/types/file";
+import { useQuery } from "@tanstack/react-query";
 import { UserRound } from "lucide-react";
 import Image from "next/image";
 import { useState, ChangeEvent } from "react";
 
 interface Props {
   session: Session | null;
+  username: string;
 }
 
-export function ProfileImage({ session }: Props) {
+async function fetchUserAvatar(username: string) {
+  let response: ApiResponse<string> | null = null;
+
+  response = (await usersApi.get(`/${username}/avatar`)).data;
+  if (response?.error) {
+    throw new Error(response?.error);
+  }
+
+  return response!.data!;
+}
+
+export function ProfileImage({ session, username }: Props) {
   const [file, setFile] = useState<FileStat | null>(null);
-  const userImageProfile = session?.user.image
-    ? appendBucketUrl(session.user.image)
-    : "";
+  const { data: userImageKey, isPending } = useQuery<string>({
+    queryKey: ["avatar", username],
+    queryFn: () => fetchUserAvatar(username),
+  });
+
+  const userImageProfile = userImageKey ? appendBucketUrl(userImageKey) : "";
 
   const updateProgress = (targetFile: FileStat, progress: number) => {
     setFile((prev) => ({ ...prev!, progress }));
@@ -74,39 +90,57 @@ export function ProfileImage({ session }: Props) {
   return (
     <div>
       <div className="relative w-24 h-24">
-        <input
-          type="file"
-          id="profile-image-input"
-          onChange={handleImageSelect}
-          className="hidden"
-        />
-        {file?.objectUrl || userImageProfile ? (
+        {session && (
           <>
-            <label htmlFor="profile-image-input" className="cursor-pointer">
-              <Image
-                className="min-h-0 w-full h-full object-cover object-center rounded-full"
-                src={file?.objectUrl || userImageProfile}
-                alt="profile image"
-                width={100}
-                height={100}
-              />
-            </label>
-            {file?.uploading && (
-              <Spinner
-                className="w-full h-full absolute top-1/2 right-1/2 translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300"
-                style={{
-                  opacity: `${65 - file.progress * 0.3}%`,
-                }}
-              />
+            <input
+              type="file"
+              id="profile-image-input"
+              onChange={handleImageSelect}
+              className="hidden"
+            />
+            {file?.objectUrl || userImageProfile ? (
+              <>
+                <label htmlFor="profile-image-input" className="cursor-pointer">
+                  <Image
+                    className="min-h-0 w-full h-full object-cover object-center rounded-full"
+                    src={file?.objectUrl || userImageProfile}
+                    alt="profile image"
+                    width={100}
+                    height={100}
+                  />
+                </label>
+                {file?.uploading && (
+                  <Spinner
+                    className="w-full h-full absolute top-1/2 right-1/2 translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300"
+                    style={{
+                      opacity: `${65 - file.progress * 0.3}%`,
+                    }}
+                  />
+                )}
+              </>
+            ) : (
+              <label htmlFor="profile-image-input" className="cursor-pointer">
+                <div className="flex items-center justify-center w-16 h-16 md:w-24 md:h-24 rounded-full bg-gray-200 border-2 border-black">
+                  <UserRound className="size-12 md:size-20" />
+                </div>
+              </label>
             )}
           </>
-        ) : (
-          <label htmlFor="profile-image-input" className="cursor-pointer">
+        )}
+        {!session &&
+          (userImageKey ? (
+            <Image
+              className="min-h-0 w-full h-full object-cover object-center rounded-full"
+              src={file?.objectUrl || userImageProfile}
+              alt="profile image"
+              width={100}
+              height={100}
+            />
+          ) : (
             <div className="flex items-center justify-center w-16 h-16 md:w-24 md:h-24 rounded-full bg-gray-200 border-2 border-black">
               <UserRound className="size-12 md:size-20" />
             </div>
-          </label>
-        )}
+          ))}
       </div>
     </div>
   );

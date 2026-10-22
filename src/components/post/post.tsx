@@ -21,7 +21,6 @@ import { AuthUser } from "@/types/user";
 import { deletePostAction } from "@/app/(actions)/post/post-actions";
 import { useModalStore } from "@/stores/modal-store";
 import { useCommentsStore } from "@/stores/comments-store";
-import { appendBucketUrl } from "@/lib/storage/url";
 import { MiniProfileImage } from "./mini-profile-image";
 
 interface Props {

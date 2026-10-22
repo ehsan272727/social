@@ -86,20 +86,11 @@ export default function Profile({
     );
   }
 
-  if (!isPending && !session) {
-    return (
-      <div className="mt-5 flex items-center justify-center gap-2">
-        Redirecting to sign in page
-        <Spinner className="size-5" />
-      </div>
-    );
-  }
-
   return (
     <div>
       <div className="flex items-center justify-between border-b pb-2 mb-4">
         <div className="flex items-center gap-3">
-          <ProfileImage session={session} />
+          <ProfileImage session={session} username={queryUsername} />
           <h1 className="font-bold">{printName}</h1>
         </div>
         <Button onClick={handleSignOut} className="flex items-center">
