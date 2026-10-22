@@ -57,7 +57,6 @@ export function CommentEditable({
           </div>
         </div>
       )}
-      <div></div>
     </div>
   );
 }
