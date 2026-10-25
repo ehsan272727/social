@@ -18,6 +18,8 @@ export async function GET(
 
     if (userInfo) {
       return NextResponse.json({ data: userInfo?.image });
+    } else {
+      return NextResponse.json({ error: "user not found" }, { status: 404 });
     }
   } catch (error) {
     return NextResponse.json(

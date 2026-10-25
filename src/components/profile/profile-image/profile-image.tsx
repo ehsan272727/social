@@ -60,7 +60,8 @@ export function ProfileImage({ session, username }: Props) {
 
     try {
       if (session?.user) {
-        deleteProfileImages(session.user);
+        const isDeleted = await deleteProfileImages(session.user);
+        if (!isDeleted) throw new Error();
       }
       const imageUrl = await uploadFile(
         newFile as FileStat,
