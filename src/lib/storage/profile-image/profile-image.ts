@@ -25,8 +25,8 @@ export async function deleteProfileImages(user: AuthUser): Promise<boolean> {
       });
       await s3Client.send(deleteCommand);
     }
-    return "ok";
+    return true;
   } catch (error) {
-    return "error";
+    return false;
   }
 }
