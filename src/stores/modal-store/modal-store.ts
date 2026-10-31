@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type ModalType = "sign-in" | "alert";
+type ModalType = "sign-in" | "alert" | "image-viewer";
 
 type ModalStore = {
   type: ModalType | null;
