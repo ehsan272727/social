@@ -49,7 +49,10 @@ export function Post({ post, user, refetchPosts }: Props) {
   });
 
   const openSignInDialog = () => {
-    openModal("sign-in", "sign in to like and comment");
+    openModal({
+      type: "sign-in",
+      data: { title: "sign in to like and comment" },
+    });
   };
 
   useEffect(() => {

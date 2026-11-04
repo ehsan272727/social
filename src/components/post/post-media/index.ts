@@ -1,2 +1,2 @@
 export * from "./post-media";
-export * from "./image-viewer";
+export * from "./media-viewer";

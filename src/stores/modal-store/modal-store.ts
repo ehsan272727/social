@@ -1,19 +1,28 @@
 import { create } from "zustand";
 
-type ModalType = "sign-in" | "alert" | "image-viewer";
+type ModalState =
+  | { type: null }
+  | { type: "sign-in"; data?: { title: string } }
+  | { type: "alert"; data: { message: string } }
+  | {
+      type: "media-viewer";
+      data: {
+        fileSrc: string;
+        type: "image" | "video";
+      };
+    };
 
 type ModalStore = {
-  type: ModalType | null;
-  data?: string | null;
-  openModal: (type: ModalType, data?: string | null) => void;
+  modal: ModalState;
+
+  openModal: (modal: Exclude<ModalState, { type: null }>) => void;
   closeModal: () => void;
 };
 
 export const useModalStore = create<ModalStore>((set) => ({
-  type: null,
-  data: null,
+  modal: { type: null },
 
-  openModal: (type, data = null) => set({ type, data }),
+  openModal: (modal) => set({ modal }),
 
-  closeModal: () => set({ type: null, data: null }),
+  closeModal: () => set({ modal: { type: null } }),
 }));

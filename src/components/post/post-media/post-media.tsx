@@ -18,8 +18,8 @@ export function PostMedia({ media }: Props) {
   const [isImageLoading, setIsImageLoading] = useState(true);
   const openModal = useModalStore((store) => store.openModal);
 
-  const openImageViewer = (src: string) => {
-    openModal("image-viewer", src);
+  const openImageViewer = (src: string, type: "image" | "video") => {
+    openModal({ type: "media-viewer", data: { fileSrc: src, type } });
   };
 
   return (
@@ -33,7 +33,7 @@ export function PostMedia({ media }: Props) {
                 return (
                   <CarouselItem
                     key={file.id}
-                    className="basis-full flex justify-center items-center"
+                    className="basis-full flex justify-center items-center cursor-pointer"
                   >
                     {file.type === "image" ? (
                       <div className="relative max-w-60 w-full aspect-square">
@@ -41,18 +41,21 @@ export function PostMedia({ media }: Props) {
                           src={srcUrl}
                           alt=""
                           fill={true}
-                          onClick={() => openImageViewer(srcUrl)}
-                          className="object-contain rounded-md"
+                          onClick={() => openImageViewer(srcUrl, "image")}
                           style={{ opacity: isImageLoading ? "0%" : "100%" }}
                           onLoad={() => setIsImageLoading(false)}
                           onError={() => setIsImageLoading(false)}
+                          className="object-contain rounded-md"
                         />
                         {isImageLoading && (
                           <Spinner className="absolute inset-0 size-8" />
                         )}
                       </div>
                     ) : (
-                      <video controls={true}>
+                      <video
+                        controls={true}
+                        onClick={() => openImageViewer(srcUrl, "video")}
+                      >
                         <source src={srcUrl}></source>
                       </video>
                     )}

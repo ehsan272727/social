@@ -2,11 +2,10 @@
 
 import { useModalStore } from "@/stores/modal-store";
 import { SignInDialog } from "../auth/sign-in-dialog";
-import { ImageViewerDialog } from "../post/post-media";
+import { MediaViewerDialog } from "../post/post-media";
 
 export function GlobalModals() {
-  const type = useModalStore((state) => state.type);
-  const data = useModalStore((state) => state.data);
+  const modal = useModalStore((state) => state.modal);
   const closeModal = useModalStore((state) => state.closeModal);
 
   const openChangeHandler = (open: boolean) => {
@@ -17,16 +16,17 @@ export function GlobalModals() {
 
   return (
     <>
-      {type === "sign-in" && (
+      {modal.type === "sign-in" && (
         <SignInDialog
           isOpen={true}
-          title={data || ""}
+          title={modal.data?.title || ""}
           handleOpenChange={openChangeHandler}
         />
       )}
-      {type === "image-viewer" && (
-        <ImageViewerDialog
-          imageSrc={data || ""}
+      {modal.type === "media-viewer" && (
+        <MediaViewerDialog
+          fileSrc={modal.data.fileSrc}
+          type={modal.data.type}
           isOpen={true}
           handleOpenChange={openChangeHandler}
         />
